@@ -1,0 +1,40 @@
+Package: jmfhc
+Title: Fit Joint Cure Models with Flexible Patterns of Hazard Ratios Over Time
+Version: 1.0
+Authors@R: c(
+    person("Can", "Xie", , "can.xie@uth.tmc.edu", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-4170-1247")),
+    person("Xuelin", "Huang", email = "xlhuang@mdanderson.org", role = "aut"),
+    person("Ruosha", "Li", email = "ruosha.li@uth.tmc.edu", role = "aut"))
+Description: We propose a joint model with a flexible-hazards cure submodel (JMFHC).
+    This new cure model accounting for longitudinal data and flexible 
+    patterns of hazard functions simultaneously handles some baseline covariates 
+    with PH structure and others with non-PH structure in the longitudinal 
+    and cure-survival data.
+    It is a joint model with individual random effects shared between 
+    cure-survival and longitudinal submodels.
+    When the PH assumption is violated, JMFHC easily accommodates crossing 
+    or non-crossing survival functions by allowing different relative hazard 
+    rates in both the short and long terms and obtains accurate estimated cure 
+    rates for subgroups.
+    This package can fit a JMFHC with point estimation and standard error estimation.
+    Estimated cure rates and survival functions can aslo be obtained.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.0
+Depends: 
+    R (>= 4.1.0)
+Imports: 
+    cubature,
+    dplyr,
+    doSNOW,
+    foreach,
+    lme4,
+    MASS,
+    MHadaptive,
+    mvtnorm,
+    parallel,
+    survival, 
+    zoo
+LazyData: true
