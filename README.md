@@ -18,10 +18,12 @@ submodel and a flexible-hazards cure model as the cure-survival submodel.
 
 For subject $i$, the observed values of the biomarker at measurement times 
 $\boldsymbol{t_i}$ denoted as $\boldsymbol{b_i}$ are shown as 
+
 $$
   \boldsymbol{b_i}(\boldsymbol{t_i})=
   \boldsymbol{D_i}\boldsymbol{\phi}+\boldsymbol{D_i}\boldsymbol{\alpha_i}+\boldsymbol{\epsilon_i},
 $$
+
 where $\boldsymbol{D_i}$ is a $n_i \times p^*$ design matrix for fixed effects 
 with the first column as 1's and the reminding $(p^*-1)$ columns containing 
 a biomarker's measurement time points using fractional polynomials (e.g., $\boldsymbol{t_i},\log(\boldsymbol{t_i}),\boldsymbol{t_i}^2$);
@@ -40,9 +42,11 @@ The survival function in our joint model (i.e., JMFHC) for subject $i$ at time
 $T$ conditional on covariates $\boldsymbol{z_i}$ and $\boldsymbol{x_i}$ 
 and random effects $\boldsymbol{\alpha_i}$ shared with the longitudinal submodel
 is assumed to be
+
 $$
     S(t|\boldsymbol{x_i},\boldsymbol{z_i},\boldsymbol{\alpha_i})=\exp\left[-e^{\beta_0}e^{\boldsymbol{z_i'\psi}}e^{\boldsymbol{\alpha_i'\eta}}\{F_0(t)\}^{\exp(\boldsymbol{x_i'\gamma})}\right],
 $$
+
 where $\beta_0$ is an unknown scalar; 
 $\boldsymbol{\psi}$ and $\boldsymbol{\eta}$ are two vectors of unknown 
 regression parameters with lengths $p$ and $p^*$ for baseline covariates 
