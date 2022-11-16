@@ -1,8 +1,8 @@
 #' Obtain the Standard Error Estimation of the Joint Cure Model with Flexible Hazards Ratios Over Time
 #' @description Fits the joint cure model and estimates standard errors of regression parameters via jackknife resampling method.
 #' Tied failure times are dealt with Breslow approximation.
-#' @param data a data.frame with no missing values contains observed survival time, event status, any continuous variable(s) and/or dummy variable(s) of categorical variable(s).
-#' The categorical variables need to be converted into dummy variables before fitting the function.
+#' @param data a data.frame with no missing values contains observed survival time, event status, any continuous variable(s) and/or dummy variable(s) 
+#' of categorical variable(s). The categorical variables need to be converted into dummy variables before fitting the function.
 #' @param event_time the variable name of observed survival time in the data.
 #' @param event_status the variable name of event status in the data.
 #' @param id the variable name of patient id in the data.
@@ -153,7 +153,8 @@ jmfhc_se_est <- function(data, event_time, event_status, id, beta_variable, gamm
     #### Step 2: generate random effects by using Adaptive Markov algorithm ####
     target <- function(pars,data,betas,gammas,sigma_prior,fixed,sigma_error){
       prior <- dmvnorm(pars, mean = rep(0,length(pars)), sigma = sigma_prior,log=T)
-      h <- ifelse(data[1,event_status.]==1,(betas%*%c(1,unlist(data[1,beta_variable.]),pars)+gammas*data[1,X_var]+(exp(gammas*data[1,X_var])-1)*log(data$base_cdf[1])+log(data$base_f[1])),0)
+      h <- ifelse(data[1,event_status.]==1,(betas%*%c(1,unlist(data[1,beta_variable.]),pars)+gammas*data[1,X_var]+(exp(gammas*data[1,X_var])-1)
+                                            *log(data$base_cdf[1])+log(data$base_f[1])),0)
       S <- -exp(betas%*%c(1,unlist(data[1,beta_variable.]),pars))*(data$base_cdf[1]^(exp(gammas*data[1,X_var])))
       D_i <- matrix(c(rep(1,nrow(data)),data[,fu_time_variable.]),byrow=F,ncol=length_lmm_var)
       f_biomarker <- dmvnorm(data[,fu_measure.],mean=D_i%*%fixed+D_i%*%pars,sigma=diag(rep(sigma_error^2,nrow(data))),log=T)
@@ -486,8 +487,10 @@ jmfhc_se_est <- function(data, event_time, event_status, id, beta_variable, gamm
     base_cdf_diff <- min(c(mean(abs((base_cdf_k2-base_cdf_k1)/base_cdf_k1)) >= relconverge.F0t, mean(abs((base_cdf_k2-base_cdf_k1))) >= absconverge.F0t))
     fixed_diff <- min(c(sum(abs((fixed_k2-fixed_k1)/fixed_k1) >= relconverge.par),sum(abs(fixed_k2-fixed_k1) >= absconverge.par)))
     sigma_error_diff <- min(c(sum(abs((sigma_error_k2-sigma_error_k1)/sigma_error_k1) >= relconverge.par),sum(abs(sigma_error_k2-sigma_error_k1) >= absconverge.par)))
-    prior_sigma_diff <- min(c(sum(abs((prior_Sigma_diag_k2-prior_Sigma_diag_k1)/prior_Sigma_diag_k1) >= relconverge.par),sum(abs(prior_Sigma_diag_k2-prior_Sigma_diag_k1) >= absconverge.par)))
-    rho_diff <- min(c(sum(abs((prior_Sigma_rho_k2-prior_Sigma_rho_k1)/prior_Sigma_rho_k1) >= relconverge.par),sum(abs(prior_Sigma_rho_k2-prior_Sigma_rho_k1) >= absconverge.par)))
+    prior_sigma_diff <- min(c(sum(abs((prior_Sigma_diag_k2-prior_Sigma_diag_k1)/prior_Sigma_diag_k1) >= relconverge.par),
+                              sum(abs(prior_Sigma_diag_k2-prior_Sigma_diag_k1) >= absconverge.par)))
+    rho_diff <- min(c(sum(abs((prior_Sigma_rho_k2-prior_Sigma_rho_k1)/prior_Sigma_rho_k1) >= relconverge.par),
+                      sum(abs(prior_Sigma_rho_k2-prior_Sigma_rho_k1) >= absconverge.par)))
 
     if(!is.null(gamma_variable.)){
       gamma_diff <- min(c(sum(abs((gamma_k2-gamma_k1)/gamma_k1) >= relconverge.par),sum((abs(gamma_k2-gamma_k1) >= absconverge.par))))
@@ -600,8 +603,10 @@ jmfhc_se_est <- function(data, event_time, event_status, id, beta_variable, gamm
       base_cdf_diff <- min(c(mean(abs((base_cdf_k2-base_cdf_k1)/base_cdf_k1)) >= relconverge.F0t, mean(abs((base_cdf_k2-base_cdf_k1))) >= absconverge.F0t))
       fixed_diff <- min(c(sum(abs((fixed_k2-fixed_k1)/fixed_k1) >= relconverge.par),sum(abs(fixed_k2-fixed_k1) >= absconverge.par)))
       sigma_error_diff <- min(c(sum(abs((sigma_error_k2-sigma_error_k1)/sigma_error_k1) >= relconverge.par),sum(abs(sigma_error_k2-sigma_error_k1) >= absconverge.par)))
-      prior_sigma_diff <- min(c(sum(abs((prior_Sigma_diag_k2-prior_Sigma_diag_k1)/prior_Sigma_diag_k1) >= relconverge.par),sum(abs(prior_Sigma_diag_k2-prior_Sigma_diag_k1) >= absconverge.par)))
-      rho_diff <- min(c(sum(abs((prior_Sigma_rho_k2-prior_Sigma_rho_k1)/prior_Sigma_rho_k1) >= relconverge.par),sum(abs(prior_Sigma_rho_k2-prior_Sigma_rho_k1) >= absconverge.par)))
+      prior_sigma_diff <- min(c(sum(abs((prior_Sigma_diag_k2-prior_Sigma_diag_k1)/prior_Sigma_diag_k1) >= relconverge.par),
+                                sum(abs(prior_Sigma_diag_k2-prior_Sigma_diag_k1) >= absconverge.par)))
+      rho_diff <- min(c(sum(abs((prior_Sigma_rho_k2-prior_Sigma_rho_k1)/prior_Sigma_rho_k1) >= relconverge.par),
+                        sum(abs(prior_Sigma_rho_k2-prior_Sigma_rho_k1) >= absconverge.par)))
 
       if(!is.null(gamma_variable.)){
         gamma_diff <- min(c(sum(abs((gamma_k2-gamma_k1)/gamma_k1) >= relconverge.par),sum((abs(gamma_k2-gamma_k1) >= absconverge.par))))
