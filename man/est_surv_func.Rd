@@ -24,8 +24,8 @@ a data.frame with sorted survival times and the corresponding estimated survival
 Estimates the survival function for a subgroup of patients with specified characteristics.
 }
 \examples{
-result_coef <- jmfhc_point_est(data=jmfhc_dat, event_time="event.time", event_status="event", id="patient.id",
-                               beta_variable="trt", gamma_variable="trt",
+result_coef <- jmfhc_point_est(data=jmfhc_dat, event_time="event.time", event_status="event",
+                               id="patient.id", beta_variable="trt", gamma_variable="trt",
                                fu_measure="measure", fu_time_variable="mes.times")
 # estimated survival function for patient subgroup receiving treatment A
 survival_trt0 <- est_surv_func(object=result_coef,z_value=0,x_value=0,event_time="event.time")
