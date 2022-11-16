@@ -1,5 +1,6 @@
 #' Obtain the Standard Error Estimation of the Joint Cure Model with Flexible Hazards Ratios Over Time
-#' @description Fits the joint cure model and estimates standard errors of regression parameters via jackknife resampling method.
+#' @description Fits the joint cure model and estimates standard errors of regression parameters via a jackknife resampling method
+#' by removing one patient's record each time.
 #' Tied failure times are dealt with Breslow approximation.
 #' @param data a data.frame with no missing values contains observed survival time, event status, any continuous variable(s) and/or dummy variable(s) 
 #' of categorical variable(s). The categorical variables need to be converted into dummy variables before fitting the function.
@@ -9,7 +10,7 @@
 #' @param beta_variable the variable name(s) defined as long-term covariate(s) in the model, which cannot be NULL.
 #' @param gamma_variable the variable name(s) defined as short-term covariate(s) in the model. By default gamma_variable = NULL.
 #' If there is no defined short-term covariate, the joint model becomes a proportional hazards cure submodel.
-#' @param fu_measure the variable name of repeatedly meausred outcome (e.g., a biomarker).
+#' @param fu_measure the variable name of repeatedly measured outcome (e.g., a biomarker).
 #' @param fu_time_variable the variable name of measurement times for the longitudinal measurements.
 #' @param max.int maximum number of iterations. The default is 200.
 #' @param no_cores the number of cores used during each point estimation for one resampled data set. The default is 5.
