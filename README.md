@@ -25,13 +25,13 @@ $$
 $$
 
 where $\boldsymbol{D_i}$ is a $n_i \times p^\ast$ design matrix for fixed effects 
-with the first column as 1's and the reminding $(p^*-1)$ columns containing 
+with the first column as 1's and the reminding $(p^\ast-1)$ columns containing 
 a biomarker's measurement time points using fractional polynomials (e.g., $\boldsymbol{t_i},\log(\boldsymbol{t_i}),\boldsymbol{t_i}^2$);
-$\boldsymbol{\phi}$ is a $p^*$-length fixed-effect regression parameter vector;
-$\boldsymbol{\alpha_i}$ is a $p^*$-length random-effect regression parameter 
-vector following a multivariate normal distribution $\mathcal{N}_{p*}(\boldsymbol{0},\boldsymbol{\Sigma})$ and the unstructured 
+$\boldsymbol{\phi}$ is a $p^\ast$-length fixed-effect regression parameter vector;
+$\boldsymbol{\alpha_i}$ is a $p^\ast$-length random-effect regression parameter 
+vector following a multivariate normal distribution $\mathcal{N}_{p\ast}(\boldsymbol{0},\boldsymbol{\Sigma})$ and the unstructured 
 covariance matrix $\boldsymbol{\Sigma}$ containing elements 
-of $\sigma_1,...,\sigma_{p^*}$ and $\rho_{jm}$, for $j,m = 1,...,p^*$ and 
+of $\sigma_1,...,\sigma_{p^\ast}$ and $\rho_{jm}$, for $j,m = 1,...,p^\ast$ and 
 $j \neq m$; 
 and $\boldsymbol{\epsilon_i}$ is a $n_i$-length vector of measurement errors 
 following a multivariate normal distribution $\mathcal{N}_{n_i}(\boldsymbol{0},\boldsymbol{R_i}=\sigma_{\epsilon}^2\boldsymbol{I_{n_i}})$.
@@ -49,7 +49,7 @@ $$
 
 where $\beta_0$ is an unknown scalar; 
 $\boldsymbol{\psi}$ and $\boldsymbol{\eta}$ are two vectors of unknown 
-regression parameters with lengths $p$ and $p^*$ for baseline covariates 
+regression parameters with lengths $p$ and $p^\ast$ for baseline covariates 
 $\boldsymbol{z_i}$ (long-term covariates) and random effects 
 $\boldsymbol{\alpha_i}$ (short-term covariates), respectively;
 $F_0(t)$ is a monotone increasing function with $F_0(0)=0$ 
