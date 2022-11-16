@@ -110,10 +110,7 @@ following command.
 help(est_surv_func)
 ```
 
-## Examples
-
-### Example of fitting a JMFHC
-
+## Example
 For example, we want to fit a JMFHC with repeatedly measured biomarker values 
 as the outcome of the longitudinal submodel with measurement times as the 
 covariate and treatment as the short- and long-term covariate in the cure 
