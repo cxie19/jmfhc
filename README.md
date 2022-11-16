@@ -51,11 +51,11 @@ where $\beta_0$ is an unknown scalar;
 $\boldsymbol{\psi}$ and $\boldsymbol{\eta}$ are two vectors of unknown 
 regression parameters with lengths $p$ and $p^\ast$ for baseline covariates 
 $\boldsymbol{z_i}$ (long-term covariates) and random effects 
-$\boldsymbol{\alpha_i}$ (short-term covariates), respectively;
+$\boldsymbol{\alpha_i}$, respectively;
 $F_0(t)$ is a monotone increasing function with $F_0(0)=0$ 
 and $\lim_{t\to\infty}F_0(t)=1$;
 and $\boldsymbol{\gamma}$ is a vector of unknown regression parameters 
-with length $q$.
+with length $q$ for short-term baseline covariates $\boldsymbol{x_i}$.
 JMPHC has $\boldsymbol{\gamma}=\boldsymbol{0}$ in the cure submodel. 
 
 
