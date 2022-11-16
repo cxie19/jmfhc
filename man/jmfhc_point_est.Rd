@@ -22,8 +22,8 @@ jmfhc_point_est(
 )
 }
 \arguments{
-\item{data}{a data.frame with no missing values contains observed survival time, event status, any continuous variable(s) and/or dummy variable(s) of categorical variable(s).
-The categorical variables need to be converted into dummy variables before fitting the function.}
+\item{data}{a data.frame with no missing values contains observed survival time, event status, any continuous variable(s) and/or dummy variable(s) of
+categorical variable(s). The categorical variables need to be converted into dummy variables before fitting the function.}
 
 \item{event_time}{the variable name of observed survival time in the data.}
 
@@ -35,8 +35,6 @@ The categorical variables need to be converted into dummy variables before fitti
 
 \item{gamma_variable}{the variable name(s) defined as short-term covariate(s) in the model. By default gamma_variable = NULL.
 If there is no defined short-term covariate, the joint model becomes a proportional hazards cure submodel.}
-
-\item{fu_measure}{the variable name of repeatedly meausred outcome (e.g., a biomarker).}
 
 \item{fu_time_variable}{the variable name of measurement times for the longitudinal measurements.}
 
@@ -51,13 +49,17 @@ If there is no defined short-term covariate, the joint model becomes a proportio
 \item{absconverge.F0t}{the average of absolute differences for \eqn{F_0(t)} as the convergence criteria. The default is 2e-3.}
 
 \item{relconverge.F0t}{the average of relative differences for \eqn{F_0(t)} as the convergence criteria. The default is 5e-3.}
+
+\item{fu_ee}{the variable name of repeatedly measured outcome (e.g., a biomarker).}
 }
 \value{
 a list containing results of the fit. The following items coef, iter, dat_baseline, dat_long, re_cov, and am_random_effects are returned.
 \item{coef}{estimated regression parameters (beta and gamma)}
 \item{iter}{the number of iterations used to complete the point estimation}
-\item{dat_baseline}{the final data at baseline including each patient's mean random effects from adaptive Markov algorithm, estimated \eqn{F_0(t)}, and \eqn{f_0(t)}}
-\item{dat_long}{the final data with patients' all records including each patient's mean random effects from adaptive Markov algorithm, estimated \eqn{F_0(t)}, and \eqn{f_0(t)}}
+\item{dat_baseline}{the final data at baseline including each patient's mean random effects from adaptive Markov algorithm, estimated \eqn{F_0(t)}, and
+\eqn{f_0(t)}}
+\item{dat_long}{the final data with patients' all records including each patient's mean random effects from adaptive Markov algorithm, estimated \eqn{F_0(t)},
+and \eqn{f_0(t)}}
 \item{re_cov}{estimated covariance matrix of random effects}
 \item{am_random_effects}{a list containing each patient's final adaptive Markov chain}
 }
@@ -68,11 +70,11 @@ Tied failure times are dealt with Breslow approximation.
 }
 \examples{
 data(jmfhc_dat)
-result_coef <- jmfhc_point_est(data=jmfhc_dat, event_time="event.time", event_status="event", id="patient.id",
-                               beta_variable="trt", gamma_variable="trt",
+result_coef <- jmfhc_point_est(data=jmfhc_dat, event_time="event.time", event_status="event",
+                               id="patient.id", beta_variable="trt", gamma_variable="trt",
                                fu_measure="measure", fu_time_variable="mes.times")
-result_coef <- jmfhc_point_est(data=jmfhc_dat, event_time="event.time", event_status="event", id="patient.id",
-                               beta_variable="trt",
+result_coef <- jmfhc_point_est(data=jmfhc_dat, event_time="event.time", event_status="event",
+                               id="patient.id", beta_variable="trt",
                                fu_measure="measure", fu_time_variable="mes.times")
 result$coef
 }

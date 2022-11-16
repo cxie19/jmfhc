@@ -23,8 +23,8 @@ jmfhc_se_est(
 )
 }
 \arguments{
-\item{data}{a data.frame with no missing values contains observed survival time, event status, any continuous variable(s) and/or dummy variable(s) of categorical variable(s).
-The categorical variables need to be converted into dummy variables before fitting the function.}
+\item{data}{a data.frame with no missing values contains observed survival time, event status, any continuous variable(s) and/or dummy variable(s)
+of categorical variable(s). The categorical variables need to be converted into dummy variables before fitting the function.}
 
 \item{event_time}{the variable name of observed survival time in the data.}
 
@@ -37,7 +37,7 @@ The categorical variables need to be converted into dummy variables before fitti
 \item{gamma_variable}{the variable name(s) defined as short-term covariate(s) in the model. By default gamma_variable = NULL.
 If there is no defined short-term covariate, the joint model becomes a proportional hazards cure submodel.}
 
-\item{fu_measure}{the variable name of repeatedly meausred outcome (e.g., a biomarker).}
+\item{fu_measure}{the variable name of repeatedly measured outcome (e.g., a biomarker).}
 
 \item{fu_time_variable}{the variable name of measurement times for the longitudinal measurements.}
 
@@ -62,16 +62,17 @@ The following items std.err and result.jackknife are returned.
 \item{result.jackknife}{a matrix containing point estimates of regression parameters from joint models for jackknife resampled datasets}
 }
 \description{
-Fits the joint cure model and estimates standard errors of regression parameters via jackknife resampling method.
+Fits the joint cure model and estimates standard errors of regression parameters via a jackknife resampling method
+by removing one patient's record each time.
 Tied failure times are dealt with Breslow approximation.
 }
 \examples{
 data(jmfhc_dat)
-result_se <- jmfhc_se_est(data=jmfhc_dat, event_time="event.time", event_status="event", id="patient.id",
-                          beta_variable="trt", gamma_variable="trt",
+result_se <- jmfhc_se_est(data=jmfhc_dat, event_time="event.time", event_status="event",
+                          id="patient.id", beta_variable="trt", gamma_variable="trt",
                           fu_measure="measure", fu_time_variable="mes.times")
-result_se <- jmfhc_se_est(data=jmfhc_dat, event_time="event.time", event_status="event", id="patient.id",
-                          beta_variable="trt",
+result_se <- jmfhc_se_est(data=jmfhc_dat, event_time="event.time", event_status="event",
+                          id="patient.id", beta_variable="trt",
                           fu_measure="measure", fu_time_variable="mes.times")
 result$coef
 }
