@@ -1,6 +1,6 @@
 #' A toy data set used for modeling JMFHC
 #'
-#' This toy data set with a cure fraction contains 500 patients' time-to-event outcomes, basline information,
+#' This toy data set with a cure fraction contains 500 patients' time-to-event outcomes, baseline information,
 #' and a biomarker's repeated measured values.
 #'
 #'@format A data frame with 500 observations on the following 6 variables.
