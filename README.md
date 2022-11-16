@@ -34,7 +34,7 @@ covariance matrix $\boldsymbol{\Sigma}$ containing elements
 of $\sigma_1,...,\sigma_{p^\ast}$ and $\rho_{jm}$, for $j,m = 1,...,p^\ast$ and 
 $j \neq m$; 
 and $\boldsymbol{\epsilon_i}$ is a $n_i$-length vector of measurement errors 
-following a multivariate normal distribution $\mathcal{N}_{n_i}(\boldsymbol{0},\boldsymbol{R_i}=\sigma_{\epsilon}^2\boldsymbol{I_{n_i}})$.
+following a multivariate normal distribution $N_{n_i}(\boldsymbol{0},\boldsymbol{R_i}=\sigma_{\epsilon}^2\boldsymbol{I_{n_i}})$.
 Here all $\boldsymbol{\alpha_i}$ and $\boldsymbol{\epsilon_i}$ are 
 mutually independent.
 
