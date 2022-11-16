@@ -86,8 +86,8 @@ help(jmfhc_point_est)
 ```
 
 The function *jmfhc_se_est* is called to obtain standard error estimation of
-regression parameters and $F_0(t)$ in a JMFHC or JMPHC. 
-Its documentation can be seen by using the following command.
+regression parameters and $F_0(t)$ in a JMFHC or JMPHC. Its documentation can 
+be seen by using the following command.
 
 ```{r}
 help(jmfhc_se_est)
