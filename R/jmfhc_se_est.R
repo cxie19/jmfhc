@@ -26,11 +26,11 @@
 #' @export
 #'
 #' @examples data(jmfhc_dat)
-#' result_se <- jmfhc_se_est(data=jmfhc_dat, event_time="event.time", event_status="event", id="patient.id",
-#'                           beta_variable="trt", gamma_variable="trt",
+#' result_se <- jmfhc_se_est(data=jmfhc_dat, event_time="event.time", event_status="event", 
+#'                           id="patient.id", beta_variable="trt", gamma_variable="trt",
 #'                           fu_measure="measure", fu_time_variable="mes.times")
-#' result_se <- jmfhc_se_est(data=jmfhc_dat, event_time="event.time", event_status="event", id="patient.id",
-#'                           beta_variable="trt",
+#' result_se <- jmfhc_se_est(data=jmfhc_dat, event_time="event.time", event_status="event", 
+#'                           id="patient.id", beta_variable="trt",
 #'                           fu_measure="measure", fu_time_variable="mes.times")
 #' result$coef
 #' @import dplyr
