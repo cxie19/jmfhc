@@ -2,8 +2,8 @@
 #' @description Fits a cure model accounting for longitudinal data and flexible patterns of hazard ratios over time
 #' and returns the point estimation.
 #' Tied failure times are dealt with Breslow approximation.
-#' @param data a data.frame with no missing values contains observed survival time, event status, any continuous variable(s) and/or dummy variable(s) of categorical variable(s).
-#' The categorical variables need to be converted into dummy variables before fitting the function.
+#' @param data a data.frame with no missing values contains observed survival time, event status, any continuous variable(s) and/or dummy variable(s) of 
+#' categorical variable(s). The categorical variables need to be converted into dummy variables before fitting the function.
 #' @param event_time the variable name of observed survival time in the data.
 #' @param event_status the variable name of event status in the data.
 #' @param id the variable name of patient id in the data.
@@ -22,8 +22,10 @@
 #' @return a list containing results of the fit. The following items coef, iter, dat_baseline, dat_long, re_cov, and am_random_effects are returned.
 #'     \item{coef}{estimated regression parameters (beta and gamma)}
 #'     \item{iter}{the number of iterations used to complete the point estimation}
-#'     \item{dat_baseline}{the final data at baseline including each patient's mean random effects from adaptive Markov algorithm, estimated \eqn{F_0(t)}, and \eqn{f_0(t)}}
-#'     \item{dat_long}{the final data with patients' all records including each patient's mean random effects from adaptive Markov algorithm, estimated \eqn{F_0(t)}, and \eqn{f_0(t)}}
+#'     \item{dat_baseline}{the final data at baseline including each patient's mean random effects from adaptive Markov algorithm, estimated \eqn{F_0(t)}, and 
+#'                         \eqn{f_0(t)}}
+#'     \item{dat_long}{the final data with patients' all records including each patient's mean random effects from adaptive Markov algorithm, estimated \eqn{F_0(t)}, 
+#'                     and \eqn{f_0(t)}}
 #'     \item{re_cov}{estimated covariance matrix of random effects}
 #'     \item{am_random_effects}{a list containing each patient's final adaptive Markov chain}
 #' @export
@@ -153,7 +155,8 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   #### Step 2: generate random effects by using Adaptive Markov algorithm ####
   target <- function(pars,data,betas,gammas,sigma_prior,fixed,sigma_error){
     prior <- dmvnorm(pars, mean = rep(0,length(pars)), sigma = sigma_prior,log=T)
-    h <- ifelse(data[1,event_status]==1,(betas%*%c(1,unlist(data[1,beta_variable]),pars)+gammas*data[1,X_var]+(exp(gammas*data[1,X_var])-1)*log(data$base_cdf[1])+log(data$base_f[1])),0)
+    h <- ifelse(data[1,event_status]==1,(betas%*%c(1,unlist(data[1,beta_variable]),pars)+gammas*data[1,X_var]+(exp(gammas*data[1,X_var])-1)
+                                         *log(data$base_cdf[1])+log(data$base_f[1])),0)
     S <- -exp(betas%*%c(1,unlist(data[1,beta_variable]),pars))*(data$base_cdf[1]^(exp(gammas*data[1,X_var])))
     D_i <- matrix(c(rep(1,nrow(data)),data[,fu_time_variable]),byrow=F,ncol=length_lmm_var)
     f_biomarker <- dmvnorm(data[,fu_measure],mean=D_i%*%fixed+D_i%*%pars,sigma=diag(rep(sigma_error^2,nrow(data))),log=T)
@@ -488,8 +491,10 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   base_cdf_diff <- min(c(mean(abs((base_cdf_k2-base_cdf_k1)/base_cdf_k1)) >= relconverge.F0t, mean(abs((base_cdf_k2-base_cdf_k1))) >= absconverge.F0t))
   fixed_diff <- min(c(sum(abs((fixed_k2-fixed_k1)/fixed_k1) >= relconverge.par),sum(abs(fixed_k2-fixed_k1) >= absconverge.par)))
   sigma_error_diff <- min(c(sum(abs((sigma_error_k2-sigma_error_k1)/sigma_error_k1) >= relconverge.par),sum(abs(sigma_error_k2-sigma_error_k1) >= absconverge.par)))
-  prior_sigma_diff <- min(c(sum(abs((prior_Sigma_diag_k2-prior_Sigma_diag_k1)/prior_Sigma_diag_k1) >= relconverge.par),sum(abs(prior_Sigma_diag_k2-prior_Sigma_diag_k1) >= absconverge.par)))
-  rho_diff <- min(c(sum(abs((prior_Sigma_rho_k2-prior_Sigma_rho_k1)/prior_Sigma_rho_k1) >= relconverge.par),sum(abs(prior_Sigma_rho_k2-prior_Sigma_rho_k1) >= absconverge.par)))
+  prior_sigma_diff <- min(c(sum(abs((prior_Sigma_diag_k2-prior_Sigma_diag_k1)/prior_Sigma_diag_k1) >= relconverge.par),
+                            sum(abs(prior_Sigma_diag_k2-prior_Sigma_diag_k1) >= absconverge.par)))
+  rho_diff <- min(c(sum(abs((prior_Sigma_rho_k2-prior_Sigma_rho_k1)/prior_Sigma_rho_k1) >= relconverge.par),
+                    sum(abs(prior_Sigma_rho_k2-prior_Sigma_rho_k1) >= absconverge.par)))
 
   if(!is.null(gamma_variable)){
     gamma_diff <- min(c(sum(abs((gamma_k2-gamma_k1)/gamma_k1) >= relconverge.par),sum((abs(gamma_k2-gamma_k1) >= absconverge.par))))
@@ -602,8 +607,10 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
     base_cdf_diff <- min(c(mean(abs((base_cdf_k2-base_cdf_k1)/base_cdf_k1)) >= relconverge.F0t, mean(abs((base_cdf_k2-base_cdf_k1))) >= absconverge.F0t))
     fixed_diff <- min(c(sum(abs((fixed_k2-fixed_k1)/fixed_k1) >= relconverge.par),sum(abs(fixed_k2-fixed_k1) >= absconverge.par)))
     sigma_error_diff <- min(c(sum(abs((sigma_error_k2-sigma_error_k1)/sigma_error_k1) >= relconverge.par),sum(abs(sigma_error_k2-sigma_error_k1) >= absconverge.par)))
-    prior_sigma_diff <- min(c(sum(abs((prior_Sigma_diag_k2-prior_Sigma_diag_k1)/prior_Sigma_diag_k1) >= relconverge.par),sum(abs(prior_Sigma_diag_k2-prior_Sigma_diag_k1) >= absconverge.par)))
-    rho_diff <- min(c(sum(abs((prior_Sigma_rho_k2-prior_Sigma_rho_k1)/prior_Sigma_rho_k1) >= relconverge.par),sum(abs(prior_Sigma_rho_k2-prior_Sigma_rho_k1) >= absconverge.par)))
+    prior_sigma_diff <- min(c(sum(abs((prior_Sigma_diag_k2-prior_Sigma_diag_k1)/prior_Sigma_diag_k1) >= relconverge.par),
+                              sum(abs(prior_Sigma_diag_k2-prior_Sigma_diag_k1) >= absconverge.par)))
+    rho_diff <- min(c(sum(abs((prior_Sigma_rho_k2-prior_Sigma_rho_k1)/prior_Sigma_rho_k1) >= relconverge.par),
+                      sum(abs(prior_Sigma_rho_k2-prior_Sigma_rho_k1) >= absconverge.par)))
 
     if(!is.null(gamma_variable)){
       gamma_diff <- min(c(sum(abs((gamma_k2-gamma_k1)/gamma_k1) >= relconverge.par),sum((abs(gamma_k2-gamma_k1) >= absconverge.par))))
