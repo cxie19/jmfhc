@@ -111,8 +111,9 @@ help(est_surv_func)
 ```
 
 ## Example
-For example, we want to fit a JMFHC with repeatedly measured biomarker values 
-as the outcome of the longitudinal submodel with measurement times as the 
+For example, we want to fit a JMFHC for the example data *jmfhc_dat*.
+This joint model has repeatedly measured biomarker values as the outcome of the 
+longitudinal submodel with measurement times as the 
 covariate and treatment as the short- and long-term covariate in the cure 
 submodel. These two submodels share individual random effects.
 We call the function *fhcmodel*, and the following command is used.
