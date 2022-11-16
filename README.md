@@ -24,7 +24,7 @@ $$
   \boldsymbol{D_i}\boldsymbol{\phi}+\boldsymbol{D_i}\boldsymbol{\alpha_i}+\boldsymbol{\epsilon_i},
 $$
 
-where $\boldsymbol{D_i}$ is a $n_i \times p^*$ design matrix for fixed effects 
+where $\boldsymbol{D_i}$ is a $n_i \times p^{*}$ design matrix for fixed effects 
 with the first column as 1's and the reminding $(p^*-1)$ columns containing 
 a biomarker's measurement time points using fractional polynomials (e.g., $\boldsymbol{t_i},\log(\boldsymbol{t_i}),\boldsymbol{t_i}^2$);
 $\boldsymbol{\phi}$ is a $p^*$-length fixed-effect regression parameter vector;
