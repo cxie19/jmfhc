@@ -14,7 +14,10 @@ based on the fitted model. <br />
 ## What is JMFHC
 
 Our proposed JMFHC consists of a linear mixed-effects model as the longitudinal 
-submodel and a flexible-hazards cure model as the cure-survival submodel.
+submodel and a flexible-hazards cure (FHC) model as the cure-survival submodel.
+An FHC model is in the form of the promotion time cure model and an extension of 
+the proportional hazards cure model. The FHC model can be fitted by the R package
+fhc at https://github.com/cxie19/fhc.
 
 For subject $i$, the observed values of the biomarker at measurement times 
 $\boldsymbol{t_i}$ denoted as $\boldsymbol{b_i}$ are shown as 
