@@ -137,8 +137,8 @@ estcure(object=result_coef,z_value=0) # treatment A
 estcure(object=result_coef,z_value=1) # treatment B 
 ```
 
-The cure rates of patients receiving treatment A and treatment B are 38.14% and 
-10.93%, respectively.<br /> 
+The cure rates of patients receiving treatment A and treatment B are 41.48% and 
+10.32%, respectively.<br /> 
 Meanwhile, with the estimated regression parameters and $F_0(t)$ from 
 *result_coef*,  we estimate the survival functions of these two subgroups 
 of patients.
