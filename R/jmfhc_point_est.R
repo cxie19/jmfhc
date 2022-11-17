@@ -11,7 +11,7 @@
 #' @param gamma_variable the variable name(s) defined as short-term covariate(s) in the model. By default gamma_variable = NULL.
 #' If there is no defined short-term covariate, the joint model becomes a proportional hazards cure submodel.
 #' @param fu_measure the variable name of repeatedly measured outcome (e.g., a biomarker).
-#' @param fu_time_variable the variable name(s) of measurement times for the longitudinal measurements.
+#' @param fu_time_variable the variable name(s) of fractional polynomials of measurement times for the longitudinal measurements.
 #' @param max.int maximum number of iterations. The default is 200.
 #' @param no_cores the number of cores used during the estimation. The default is 9.
 #' @param absconverge.par absolute difference \eqn{(current-previous)} for regression parameters as the convergence criteria. The default is 1e-3.
