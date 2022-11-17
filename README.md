@@ -7,8 +7,8 @@ and longitudinal submodels and accommodates covariates’ non-proportional hazar
 structures easily. More specifically, this R package can fit a joint model using 
 a flexible-hazards cure submodel (JMFHC) and a joint model using a proportional 
 hazards submodel (JMPHC) as JMFHC's special case for longitudinal 
-and right-censored survival data with a cure fraction. We can also use this 
-package to estimate a patient subgroup's cure rate and survival function 
+and right-censored survival data with a cure fraction. This package also provides 
+functions to estimate a patient subgroup's cure rate and survival function 
 based on the fitted model. <br />
 
 ## What is JMFHC
