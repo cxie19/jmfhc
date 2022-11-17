@@ -20,14 +20,14 @@
 #' @param relconverge.F0t the average of relative differences for \eqn{F_0(t)} as the convergence criteria. The default is 5e-3.
 #'
 #' @return a list containing results of the fit. The following items coef, iter, dat_baseline, dat_long, re_cov, and am_random_effects are returned.
-#'     \item{coef}{estimated regression parameters (beta and gamma)}
+#'     \item{coef}{estimated regression parameters in the cure and longitudinal submodels}
 #'     \item{iter}{the number of iterations used to complete the point estimation}
-#'     \item{dat_baseline}{the final data at baseline including each patient's mean random effects from adaptive Markov algorithm, estimated \eqn{F_0(t)}, and 
-#'                         \eqn{f_0(t)}}
-#'     \item{dat_long}{the final data with patients' all records including each patient's mean random effects from adaptive Markov algorithm, estimated \eqn{F_0(t)}, 
-#'                     and \eqn{f_0(t)}}
+#'     \item{dat_baseline}{the final data at baseline including each patient's mean random effects (re1, re2, ...) from adaptive Markov algorithm, 
+#'                         estimated \eqn{F_0(t)}, and \eqn{f_0(t)}}
+#'     \item{dat_long}{the final data with patients' all records including each patient's mean random effects (re1, re2, ...) from adaptive Markov algorithm, 
+#'                     estimated \eqn{F_0(t)}, and \eqn{f_0(t)}}
 #'     \item{re_cov}{estimated covariance matrix of random effects}
-#'     \item{am_random_effects}{a list containing each patient's final adaptive Markov chain}
+#'     \item{am_random_effects}{a list containing all patients' final adaptive Markov chains}
 #' @export
 #'
 #' @examples data(jmfhc_dat)
