@@ -55,26 +55,23 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
                             max.int=200, no_cores=9,
                             absconverge.par=1e-3, relconverge.par=2e-3,
                             absconverge.F0t=2e-3, relconverge.F0t=5e-3){
-
+  
   cat("Point estimation starts.","\n")
-
   colnames(data)[(colnames(data)==id)] <- "id"
-
   dat_base <- data %>%
     group_by(id) %>%
     slice_head(n = 1)
   n <- nrow(dat_base)
-
+  
   length_lmm_var <- length(fu_time_variable)+1
   random_effects <- paste0("re",seq(length_lmm_var))
-
   Z_var <- c(beta_variable,random_effects)
   if (!is.null(gamma_variable)){
     X_var <- gamma_variable
   } else{
     X_var <- beta_variable[1]
   }
-
+  
   #### Step 1: initial values ####
   # regression parameters in the longitudinal submodel
   lmem <- as.formula(paste(fu_measure,"~",fu_time_variable,"+(",fu_time_variable,"|id)"))
@@ -86,7 +83,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   # predict the random effects
   dat_base[,random_effects] <-ranef(lmem)$id
   data <- merge(data,dat_base[,c(random_effects,"id")],by="id")
-
+  
   # regression parameters in the cure submodel
   dat_base <- as.matrix(dat_base[order(as.matrix(dat_base[,event_time])),])
   t <- dat_base[dat_base[,event_status]==1,event_time]
@@ -119,18 +116,18 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   data <- merge(data,dat_base[,c("base_f","base_cdf","id")],by="id")
   # initial values of gamma
   gamma_loglik_init <- function(gamma,data,beta,beta0){
-
+    
     data_temp <- as.matrix(data)
     Z_i <- data_temp[,Z_var]
     X_i <- data_temp[,X_var]
     betaZ <- Z_i%*%beta
     gammaX <- X_i%*%as.matrix(gamma,nrow=length(gamma))
     event_i <- data_temp[,"event"]
-
+    
     failure_part <- event_i*(beta0+betaZ+gammaX+(exp(gammaX)-1)*log(data_temp[,"base_cdf"])+log(data_temp[,"base_f"]))
     failure_part[which(is.na(failure_part))] <- 0
     LL <- sum(failure_part-exp(beta0)*exp(betaZ)*(data_temp[,"base_cdf"]^exp(gammaX)))
-
+    
     return(LL)
   }
   if (!is.null(gamma_variable)){
@@ -142,7 +139,6 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
                          control=list("fnscale"=-1,maxit=10000), hessian=F, method = "Brent",
                          lower=-10,upper=10)
     }
-
     if (gamma_est$convergence==0){
       gamma<- gamma_est$par
     }
@@ -150,14 +146,14 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
     gamma <- rep(0,length(X_var))
   }
   dat_base <- dat_base[order(dat_base$id),]
-
+  
   #### 1st iteration ####
   #### Step 2: generate random effects by using Adaptive Markov algorithm ####
   target <- function(pars,data,betas,gammas,sigma_prior,fixed,sigma_error){
     prior <- dmvnorm(pars, mean = rep(0,length(pars)), sigma = sigma_prior,log=T)
-    h <- ifelse(data[1,event_status]==1,(betas%*%c(1,unlist(data[1,beta_variable]),pars)+gammas*data[1,X_var]+(exp(gammas*data[1,X_var])-1)
-                                         *log(data$base_cdf[1])+log(data$base_f[1])),0)
-    S <- -exp(betas%*%c(1,unlist(data[1,beta_variable]),pars))*(data$base_cdf[1]^(exp(gammas*data[1,X_var])))
+    h <- ifelse(data[1,event_status]==1,(betas%*%c(1,unlist(data[1,beta_variable]),pars)+gammas%*%unlist(data[1,X_var])
+                                         +(exp(gammas%*%unlist(data[1,X_var]))-1)*log(data$base_cdf[1])+log(data$base_f[1])),0)
+    S <- -exp(betas%*%c(1,unlist(data[1,beta_variable]),pars))*(data$base_cdf[1]^(exp(gammas%*%unlist(data[1,X_var]))))
     D_i <- matrix(c(rep(1,nrow(data)),data[,fu_time_variable]),byrow=F,ncol=length_lmm_var)
     f_biomarker <- dmvnorm(data[,fu_measure],mean=D_i%*%fixed+D_i%*%pars,sigma=diag(rep(sigma_error^2,nrow(data))),log=T)
     return(prior+h+S+f_biomarker)
@@ -167,7 +163,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   mcmc_r <- foreach(i=dat_base$id,.packages = c('MASS','mvtnorm','MHadaptive')) %dopar%
     {Metro_Hastings(li_func=target, pars=as.numeric(dat_base[dat_base$id==i,random_effects]),
                     iterations = 10000, burn_in=1000,
-                    par_names=random_effects,
+                    par_names=random_effects, 
                     data=data[data$id==i,],
                     betas = c(beta0,beta),
                     gammas = gamma,
@@ -176,14 +172,14 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
                     fixed = fixed)
     }
   stopCluster(cl)
-
+  
   # thinning by 5
   cl <- makeCluster(no_cores)
   registerDoSNOW(cl)
   thin_sample <- foreach(i=seq(n),.packages = c("MASS",'mvtnorm','MHadaptive')) %dopar%
     { mcmc_thin(mcmc_r[[i]]) }
   stopCluster(cl)
-
+  
   # add random effects into the baseline data set
   sample <- lapply(seq(n),function(x) thin_sample[[x]]$trace)
   proposal_sigma <- lapply(seq(n),function(x) thin_sample[[x]]$prop_sigma)
@@ -193,7 +189,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   remove <- which(colnames(data)%in%random_effects)
   data <- data[,-remove]
   data <- merge(data,dat_base[,c("id",random_effects)],by="id")
-
+  
   #### Step 3: Estimate longitudinal parameters ####
   # estimate fixed effects
   est_fixed <- function(data){ # long version of data
@@ -205,7 +201,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
     return(fixed)
   }
   fixed_k1 <- est_fixed(data=data)
-
+  
   # estimate sd of error term
   D_full_fixed <- sapply(dat_base$id,function(x)
     matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_variable]),byrow=F,ncol=length_lmm_var)%*%fixed_k1)
@@ -220,11 +216,10 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   stopCluster(cl)
   check <- data %>% count(id)
   sigma_error_k1 <- sqrt((1/sum(check[,2]))*mean(quadratic))
-
-  # estimate covariance matrix of random effects
-  sum_mean_alpha_sqrd <- foreach(x=seq(dat_base$id),.combine="+")%do%{t(sample[[x]]/nrow(sample[[x]]))%*%sample[[x]]}
+  
+  # estimate covariance matrix of random effects 
+  sum_mean_alpha_sqrd <- foreach(x=seq(n),.combine="+")%do%{t(sample[[x]]/nrow(sample[[x]]))%*%sample[[x]]}
   prior_Sigma_k1 <- (1/n)*sum_mean_alpha_sqrd
-
   prior_Sigma_diag_k1 <- sqrt(diag(prior_Sigma_k1))
   prior_Sigma_rho_k1 <- c()
   for (i in seq(nrow(prior_Sigma_k1))){
@@ -233,13 +228,12 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
                               prior_Sigma_k1[i,j]/(prior_Sigma_diag_k1[i]*prior_Sigma_diag_k1[j]))
     }
   }
-
+  
   #### Step 4: Estimate survival parameters except F0(t) ####
   # estimate beta and gamma
   beta_gamma_comp <- function(data,par,beta0){
-
+    
     beta_gamma_loglik <- function(par){
-
       beta <- matrix(par[seq(Z_var)],nrow=1,ncol=length(Z_var))
       if (!is.null(gamma_variable)){
         gamma <- matrix(par[(length(Z_var)+1):length(par)],nrow=1,ncol=length(X_var))
@@ -247,29 +241,29 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
         gamma <- matrix(rep(0,length(X_var)),nrow=1,ncol=length(X_var))
       }
       re <- par[(length(beta_variable)+1):length(Z_var)]
-
-      data$mu_exp_re <- foreach(i=seq(n),.combine = "c")%do%{
-        exp_value <- exp(sample[[which(unique(data$id)==data$id[i])]]%*%re)
+      
+      data$mu_exp_re <- foreach(i=data$id,.combine = "c")%do%{
+        exp_value <- exp(sample[[which(data$id==i)]]%*%re)
         return(mean(exp_value))
       }
-
+      
       data_temp <- as.matrix(data)
       Z_i <- data_temp[,Z_var]
       X_i <- data_temp[,X_var]
       betaZ <-Z_i%*%t(beta)
-      exp_betaZ <- exp(Z_i[,beta_variable]%*%matrix(beta[seq(length(beta_variable))],nrow=length(beta_variable)))*data_temp[,"mu_exp_re"]
+      exp_betaZ <- exp(Z_i[,beta_variable]%*%matrix(beta[seq(beta_variable)],nrow=length(beta_variable)))*data_temp[,"mu_exp_re"]
       gammaX <- X_i%*%t(gamma)
       event_i <- data_temp[,"event"]
-
+      
       failure_part <- event_i*(beta0+betaZ+gammaX+(exp(gammaX)-1)*log(data_temp[,"base_cdf"])+log(data_temp[,"base_f"]))
       failure_part[which(is.na(failure_part))] <- 0
       LL <- sum(failure_part-exp(beta0)*exp_betaZ*(data_temp[,"base_cdf"]^exp(gammaX)))
-
+      
       return(LL)
     }
-
+    
     beta_gamma_est <-optim(par=par,fn=beta_gamma_loglik,method = "Nelder-Mead",control=list("fnscale"=-1,maxit=10000), hessian=F)
-
+    
     if (beta_gamma_est$convergence==0){
       beta_gamma_k <- beta_gamma_est$par
       beta <- matrix(beta_gamma_k[seq(Z_var)],nrow=1,ncol=length(Z_var))
@@ -282,57 +276,57 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
       beta <- "beta does not converge"
       gamma <- "gamma does not converge"
     }
-
+    
     return(list(beta,gamma))
   }
   beta_gamma_k1 <- beta_gamma_comp(data=dat_base,par=c(beta,gamma),beta0=beta0)
   beta_k1 <- beta_gamma_k1[[1]]
   gamma_k1 <- beta_gamma_k1[[2]]
-
+  
   # add expectation of exp(random effects)
   re <- beta_k1[(length(beta_variable)+1):length(Z_var)]
-  dat_base$mu_exp_re <- foreach(i=seq(n),.combine = "c")%do%{
-    exp_value <- exp(sample[[which(unique(dat_base$id)==dat_base$id[i])]]%*%re)
+  dat_base$mu_exp_re <- foreach(i=dat_base$id,.combine = "c")%do%{
+    exp_value <- exp(sample[[which(dat_base$id==i)]]%*%re)
     return(mean(exp_value))
   }
-
+  
   # estimate beta0
   beta0_comp <- function(data,beta,gamma){
     data_temp <- as.matrix(data)
     X_i <- data_temp[,X_var]
     gammaX <- X_i%*%t(gamma)
     mu_exp_re <- data_temp[,"mu_exp_re"]
-    exp_betaZ <- exp(data_temp[,beta_variable]%*%matrix(beta[seq(length(beta_variable))],nrow=length(beta_variable)))*mu_exp_re
+    exp_betaZ <- exp(data_temp[,beta_variable]%*%matrix(beta[seq(beta_variable)],nrow=length(beta_variable)))*mu_exp_re
     beta_0 <- log(sum(data_temp[,event_status])/(t(exp_betaZ)%*%(data_temp[,"base_cdf"]^(exp(gammaX)))))
     return(as.vector(beta_0))
   }
   beta0_k1 <- beta0_comp(data=dat_base, beta = beta_k1, gamma = gamma_k1)
-
+  
   #### Step 5: estimate F0(t) in the cure submodel ####
   f_est <- function(data,gamma,beta,beta_0){
-
+    
     data <- as.matrix(data)
     data <- data[order(data[,event_time]),]
     # failure times
     t <- data[data[,event_status]==1,event_time]
     # at risk
-    exp_betaZ <- lapply(unique(t),function(x)
-      exp(data[data[,event_time]>=x,beta_variable]%*%matrix(beta[seq(length(beta_variable))],nrow=length(beta_variable)))*data[data[,event_time]>=x,"mu_exp_re"])
+    exp_betaZ <- lapply(unique(t),function(x) 
+      exp(data[data[,event_time]>=x,beta_variable]%*%matrix(beta[seq(beta_variable)],nrow=length(beta_variable)))*data[data[,event_time]>=x,"mu_exp_re"])
     gammaX <- lapply(unique(t),function(x) data[data[,event_time]>=x,X_var]%*%gamma)
     base_F_i <- lapply(unique(t), function(x) data[data[,event_time]>=x,"base_cdf"])
-
+    
     # at risk and fail in the future
     gammaX_failure <- lapply(unique(t),function(x) data[data[,event_time]>=x & data[,event_status]==1,X_var]%*%gamma)
     base_F_i_failure <- lapply(unique(t), function(x) data[data[,event_time]>=x & data[,event_status]==1,"base_cdf"])
-
+    
     # number of tied events
     w_i <- sapply(unique(t),function(x) sum(data[,event_status]==1 &data[,event_time]==x))
-
+    
     # denominator
     deno <- sapply(seq(unique(t)),function(x)
       sum(exp(beta_0)*exp_betaZ[[x]]*exp(gammaX[[x]])*((base_F_i[[x]])^(exp(gammaX[[x]])-1)))
       -sum((exp(gammaX_failure[[x]])-1)/base_F_i_failure[[x]]))
-
+    
     #obtain the value of alpha
     alpha_est <- function(alpha){
       sum(w_i/(deno+alpha))-1
@@ -345,7 +339,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
       alpha <- ifelse(sum(alpha_result=="error")<length(range_root),"root","error")
       if (alpha=="root"){
         alpha_select <- unique(round(as.numeric(alpha_result[alpha_result!="error"]),4))
-
+        
         for (i in seq(alpha_select)){
           check <- as.numeric(alpha_select[i])
           if (abs(sum(w_i/(deno+check))-1) <1e-4 & sum(w_i/(deno+check)<0)==0){
@@ -363,12 +357,12 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
       }
       times <- times +1
     }
-
+    
     new_base_f <- w_i/(deno+alpha)
     new_base_cdf <- cumsum(new_base_f)
-    event_base_f <- unlist(sapply(seq(length(unique(t))),function(x) rep(new_base_f[x],sum(data[data[,event_status]==1,event_time]==unique(t)[x]))))
-    event_base_cdf <- unlist(sapply(seq(length(unique(t))),function(x) rep(new_base_cdf[x],sum(data[data[,event_status]==1,event_time]==unique(t)[x]))))
-
+    event_base_f <- unlist(sapply(seq(unique(t)),function(x) rep(new_base_f[x],sum(data[data[,event_status]==1,event_time]==unique(t)[x]))))
+    event_base_cdf <- unlist(sapply(seq(unique(t)),function(x) rep(new_base_cdf[x],sum(data[data[,event_status]==1,event_time]==unique(t)[x]))))
+    
     remove <- which(colnames(data)%in%c("base_cdf","base_f"))
     data <- as.data.frame(data[,-remove])
     data$base_f <- NA
@@ -376,7 +370,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
     data$base_f[data$event==1] <- event_base_f
     data$base_f[data$event==0] <- 0
     data$base_cdf[data$event==1] <- event_base_cdf
-
+    
     cen <- which(data$event==0)
     death <- which(data$event==1)
     #check the beginning
@@ -386,7 +380,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
     }
     data$base_cdf <- na.locf(data$base_cdf)
     data <- data[order(data$id),]
-
+    
     return(list(new_base_cdf,data,alpha))
   }
   base_f_0 <- f_est(data=dat_base,gamma=gamma_k1,beta=beta_k1,beta_0=beta0_k1)
@@ -395,7 +389,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   remove <- which(colnames(data)%in%c("base_f","base_cdf"))
   data <- data[,-remove]
   data <- merge(data,dat_base[,c("id","base_f","base_cdf")],by="id")
-
+  
   #### 2nd iteration ####
   #### Step 2 ####
   cl <- makeCluster(no_cores)
@@ -412,9 +406,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
                     fixed = fixed_k1)
     }
   stopCluster(cl)
-
-
-
+  
   # thinning
   cl <- makeCluster(no_cores)
   registerDoSNOW(cl)
@@ -430,7 +422,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   remove <- which(colnames(data)%in%random_effects)
   data <- data[,-remove]
   data <- merge(data,dat_base[,c("id",random_effects)],by="id")
-
+  
   #### Step 3 ####
   # estimate fixed effects
   fixed_k2 <- est_fixed(data=data)
@@ -444,15 +436,14 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
       matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_variable]),byrow=F,ncol=length_lmm_var)%*%sample[[which(unique(data$id)==x)]][i,]))
     b_star_invQ_b_star <- data[,fu_measure]-each_D_full_alpha-unlist(D_full_fixed)
     t(b_star_invQ_b_star)%*%b_star_invQ_b_star
-  }
+  }  
   stopCluster(cl)
   check <- data %>% count(id)
   sigma_error_k2 <- sqrt((1/sum(check[,2]))*mean(quadratic))
-
-  # estimate covariance matrix of random effects
-  sum_mean_alpha_sqrd <- foreach(x=seq(dat_base$id),.combine="+")%do%{t(sample[[x]]/nrow(sample[[x]]))%*%sample[[x]]}
+  
+  # estimate covariance matrix of random effects 
+  sum_mean_alpha_sqrd <- foreach(x=seq(n),.combine="+")%do%{t(sample[[x]]/nrow(sample[[x]]))%*%sample[[x]]}
   prior_Sigma_k2 <- (1/n)*sum_mean_alpha_sqrd
-
   prior_Sigma_diag_k2 <- sqrt(diag(prior_Sigma_k2))
   prior_Sigma_rho_k2 <- c()
   for (i in seq(nrow(prior_Sigma_k2))){
@@ -461,7 +452,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
                               prior_Sigma_k2[i,j]/(prior_Sigma_diag_k2[i]*prior_Sigma_diag_k2[j]))
     }
   }
-
+  
   #### Step 4 ####
   # estimate beta and gamma
   beta_gamma_k2 <- beta_gamma_comp(data=dat_base,par=c(beta_k1,gamma_k1),beta0=beta0_k1)
@@ -469,13 +460,13 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   gamma_k2 <- beta_gamma_k2[[2]]
   # add expectation of exp(random effects)
   re <- beta_k2[(length(beta_variable)+1):length(Z_var)]
-  dat_base$mu_exp_re <- foreach(i=seq(n),.combine = "c")%do%{
-    exp_value <- exp(sample[[which(unique(dat_base$id)==dat_base$id[i])]]%*%re)
+  dat_base$mu_exp_re <- foreach(i=dat_base$id,.combine = "c")%do%{
+    exp_value <- exp(sample[[which(dat_base$id==i)]]%*%re)
     return(mean(exp_value))
   }
   # estimate beta0
   beta0_k2 <- beta0_comp(data=dat_base, beta = beta_k2, gamma = gamma_k2)
-
+  
   #### Step 5 ####
   base_f_0 <- f_est(data=dat_base,gamma=gamma_k2,beta=beta_k2,beta_0=beta0_k2)
   base_cdf_k2 <- base_f_0[[1]]
@@ -483,7 +474,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   remove <- which(colnames(data)%in%c("base_f","base_cdf"))
   data <- data[,-remove]
   data <- merge(data,dat_base[,c("id","base_f","base_cdf")],by="id")
-
+  
   #### Keep doing iterations until convergence ####
   iteration <- 2
   beta_0_diff <- min(c(abs((beta0_k2-beta0_k1)/beta0_k1) >= relconverge.par, abs(beta0_k2-beta0_k1) >= absconverge.par))
@@ -495,17 +486,17 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
                             sum(abs(prior_Sigma_diag_k2-prior_Sigma_diag_k1) >= absconverge.par)))
   rho_diff <- min(c(sum(abs((prior_Sigma_rho_k2-prior_Sigma_rho_k1)/prior_Sigma_rho_k1) >= relconverge.par),
                     sum(abs(prior_Sigma_rho_k2-prior_Sigma_rho_k1) >= absconverge.par)))
-
+  
   if(!is.null(gamma_variable)){
     gamma_diff <- min(c(sum(abs((gamma_k2-gamma_k1)/gamma_k1) >= relconverge.par),sum((abs(gamma_k2-gamma_k1) >= absconverge.par))))
     deter <- ( beta_0_diff!=0  | beta_diff !=0 | gamma_diff!=0 | base_cdf_diff!=0 | fixed_diff!=0 |sigma_error_diff!=0 |prior_sigma_diff!=0
-               |rho_diff!=0 )
+               |rho_diff!=0)
   }else{
-    deter <- ( beta_0_diff!=0  | beta_diff !=0 | base_cdf_diff!=0 | fixed_diff!=0 |sigma_error_diff!=0 |prior_sigma_diff!=0 |rho_diff!=0 )
+    deter <- ( beta_0_diff!=0  | beta_diff !=0 | base_cdf_diff!=0 | fixed_diff!=0 |sigma_error_diff!=0 |prior_sigma_diff!=0 |rho_diff!=0)
   }
-
+  
   while(deter & iteration < max.int){
-
+    
     iteration  <- iteration + 1
     beta0_k1 <- beta0_k2
     beta_k1 <- beta_k2
@@ -514,8 +505,9 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
     fixed_k1 <- fixed_k2
     sigma_error_k1 <- sigma_error_k2
     prior_Sigma_k1 <- prior_Sigma_k2
+    prior_Sigma_diag_k1 <- prior_Sigma_diag_k2
     prior_Sigma_rho_k1 <- prior_Sigma_rho_k2
-
+    
     #### Step 2 ####
     cl <- makeCluster(no_cores)
     registerDoSNOW(cl)
@@ -531,7 +523,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
                       fixed = fixed_k1)
       }
     stopCluster(cl)
-
+    
     # thinning
     cl <- makeCluster(no_cores)
     registerDoSNOW(cl)
@@ -547,7 +539,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
     remove <- which(colnames(data)%in%random_effects)
     data <- data[,-remove]
     data <- merge(data,dat_base[,c("id",random_effects)],by="id")
-
+    
     #### Step 3 ####
     # estimate fixed effects
     fixed_k2 <- est_fixed(data=data)
@@ -561,15 +553,14 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
         matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_variable]),byrow=F,ncol=length_lmm_var)%*%sample[[which(unique(data$id)==x)]][i,]))
       b_star_invQ_b_star <- data[,fu_measure]-each_D_full_alpha-unlist(D_full_fixed)
       t(b_star_invQ_b_star)%*%b_star_invQ_b_star
-    }
+    }  
     stopCluster(cl)
     check <- data %>% count(id)
     sigma_error_k2 <- sqrt((1/sum(check[,2]))*mean(quadratic))
-
-    # estimate covariance matrix of random effects
-    sum_mean_alpha_sqrd <- foreach(x=seq(dat_base$id),.combine="+")%do%{t(sample[[x]]/nrow(sample[[x]]))%*%sample[[x]]}
+    
+    # estimate covariance matrix of random effects 
+    sum_mean_alpha_sqrd <- foreach(x=seq(n),.combine="+")%do%{t(sample[[x]]/nrow(sample[[x]]))%*%sample[[x]]}
     prior_Sigma_k2 <- (1/n)*sum_mean_alpha_sqrd
-
     prior_Sigma_diag_k2 <- sqrt(diag(prior_Sigma_k2))
     prior_Sigma_rho_k2 <- c()
     for (i in seq(nrow(prior_Sigma_k2))){
@@ -578,7 +569,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
                                 prior_Sigma_k2[i,j]/(prior_Sigma_diag_k2[i]*prior_Sigma_diag_k2[j]))
       }
     }
-
+    
     #### Step 4 ####
     # estimate beta and gamma
     beta_gamma_k2 <- beta_gamma_comp(data=dat_base,par=c(beta_k1,gamma_k1),beta0=beta0_k1)
@@ -586,13 +577,13 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
     gamma_k2 <- beta_gamma_k2[[2]]
     # add expectation of exp(random effects)
     re <- beta_k2[(length(beta_variable)+1):length(Z_var)]
-    dat_base$mu_exp_re <- foreach(i=seq(n),.combine = "c")%do%{
-      exp_value <- exp(sample[[which(unique(dat_base$id)==dat_base$id[i])]]%*%re)
+    dat_base$mu_exp_re <- foreach(i=dat_base$id,.combine = "c")%do%{
+      exp_value <- exp(sample[[which(dat_base$id==i)]]%*%re)
       return(mean(exp_value))
     }
     # estimate beta0
     beta0_k2 <- beta0_comp(data=dat_base, beta = beta_k2, gamma = gamma_k2)
-
+    
     #### Step 5 ####
     base_f_0 <- f_est(data=dat_base,gamma=gamma_k2,beta=beta_k2,beta_0=beta0_k2)
     base_cdf_k2 <- base_f_0[[1]]
@@ -600,7 +591,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
     remove <- which(colnames(data)%in%c("base_f","base_cdf"))
     data <- data[,-remove]
     data <- merge(data,dat_base[,c("id","base_f","base_cdf")],by="id")
-
+    
     ## Keep doing iterations until convergence
     beta_0_diff <- min(c(abs((beta0_k2-beta0_k1)/beta0_k1) >= relconverge.par, abs(beta0_k2-beta0_k1) >= absconverge.par))
     beta_diff <- min(c(sum(abs((beta_k2-beta_k1)/beta_k1) >= relconverge.par),sum((abs(beta_k2-beta_k1) >= absconverge.par))))
@@ -611,18 +602,18 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
                               sum(abs(prior_Sigma_diag_k2-prior_Sigma_diag_k1) >= absconverge.par)))
     rho_diff <- min(c(sum(abs((prior_Sigma_rho_k2-prior_Sigma_rho_k1)/prior_Sigma_rho_k1) >= relconverge.par),
                       sum(abs(prior_Sigma_rho_k2-prior_Sigma_rho_k1) >= absconverge.par)))
-
+    
     if(!is.null(gamma_variable)){
       gamma_diff <- min(c(sum(abs((gamma_k2-gamma_k1)/gamma_k1) >= relconverge.par),sum((abs(gamma_k2-gamma_k1) >= absconverge.par))))
       deter <- ( beta_0_diff!=0  | beta_diff !=0 | gamma_diff!=0 | base_cdf_diff!=0 | fixed_diff!=0 |sigma_error_diff!=0 |prior_sigma_diff!=0
-                 |rho_diff!=0 )
+                 |rho_diff!=0)
     }else{
-      deter <- ( beta_0_diff!=0  | beta_diff !=0 | base_cdf_diff!=0 | fixed_diff!=0 |sigma_error_diff!=0 |prior_sigma_diff!=0 |rho_diff!=0 )
+      deter <- ( beta_0_diff!=0  | beta_diff !=0 | base_cdf_diff!=0 | fixed_diff!=0 |sigma_error_diff!=0 |prior_sigma_diff!=0 |rho_diff!=0)
     }
   }
-
+  
   rho_num <- unlist(sapply(seq(length_lmm_var-1),function(x) paste0(x,seq(length_lmm_var)[-seq(x)])))
-
+  
   if (!is.null(gamma_variable)){
     result.coef <- matrix(c(beta0_k2,beta_k2,gamma_k2,fixed_k2,prior_Sigma_diag_k2,prior_Sigma_rho_k2, sigma_error_k2),nrow=1)
     colnames(result.coef) <- c("beta_intercept",paste0("beta_",Z_var),
@@ -638,17 +629,17 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
                                paste0("re_sd_",seq(length_lmm_var)),
                                paste0("re_rho_",rho_num),
                                "error_sd")
-  }
-
+  }  
+  
   remove <- which(colnames(dat_base)=="mu_exp_re")
   dat_base <- dat_base[,-remove]
   colnames(dat_base)[(colnames(dat_base)=="id")] <- id
   colnames(data)[(colnames(data)=="id")] <- id
-
+  
   cat("Point estimation is done.","\n")
-
+  
   return(list(coef=result.coef,iter=iteration,dat_baseline=dat_base,dat_long = data,
               re_cov=prior_Sigma_k2,
               am_random_effects=sample))
-
+  
 }
