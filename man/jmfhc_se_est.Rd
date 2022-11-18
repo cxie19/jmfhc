@@ -39,7 +39,7 @@ If there is no defined short-term covariate, the joint model becomes a proportio
 
 \item{fu_measure}{the variable name of repeatedly measured outcome (e.g., a biomarker).}
 
-\item{fu_time_variable}{the variable name of measurement times for the longitudinal measurements.}
+\item{fu_time_variable}{the variable name(s) of fractional polynomials of measurement times for the longitudinal measurements.}
 
 \item{max.int}{maximum number of iterations. The default is 200.}
 

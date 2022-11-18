@@ -4,14 +4,15 @@
 \alias{est_surv_func}
 \title{Estimate survival functions for subgroups}
 \usage{
-est_surv_func(object, z_value, x_value, event_time, n.random = 1000)
+est_surv_func(object, z_value, x_value = NULL, event_time, n.random = 1000)
 }
 \arguments{
 \item{object}{an object of jmfhc_point_est.}
 
 \item{z_value}{value(s) of the long-term baseline covariate(s) in the order specified at the argument beta_variable of jmfhc_point_est() function.}
 
-\item{x_value}{value(s) of the short-term baseline covariate(s) in the order specified at the argument gamma_variable of jmfhc_point_est() function.}
+\item{x_value}{value(s) of the short-term baseline covariate(s) in the order specified at the argument gamma_variable of jmfhc_point_est() function.
+If gamma is set as NULL in the jmfhc_point_est() function, then there is no need to put values here. The default is NULL.}
 
 \item{event_time}{the variable name of observed survival time in the data.}
 

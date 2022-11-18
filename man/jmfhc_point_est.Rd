@@ -36,7 +36,9 @@ categorical variable(s). The categorical variables need to be converted into dum
 \item{gamma_variable}{the variable name(s) defined as short-term covariate(s) in the model. By default gamma_variable = NULL.
 If there is no defined short-term covariate, the joint model becomes a proportional hazards cure submodel.}
 
-\item{fu_time_variable}{the variable name of measurement times for the longitudinal measurements.}
+\item{fu_measure}{the variable name of repeatedly measured outcome (e.g., a biomarker).}
+
+\item{fu_time_variable}{the variable name(s) of fractional polynomials of measurement times for the longitudinal measurements.}
 
 \item{max.int}{maximum number of iterations. The default is 200.}
 
@@ -49,19 +51,17 @@ If there is no defined short-term covariate, the joint model becomes a proportio
 \item{absconverge.F0t}{the average of absolute differences for \eqn{F_0(t)} as the convergence criteria. The default is 2e-3.}
 
 \item{relconverge.F0t}{the average of relative differences for \eqn{F_0(t)} as the convergence criteria. The default is 5e-3.}
-
-\item{fu_ee}{the variable name of repeatedly measured outcome (e.g., a biomarker).}
 }
 \value{
 a list containing results of the fit. The following items coef, iter, dat_baseline, dat_long, re_cov, and am_random_effects are returned.
-\item{coef}{estimated regression parameters (beta and gamma)}
+\item{coef}{estimated regression parameters in the cure and longitudinal submodels}
 \item{iter}{the number of iterations used to complete the point estimation}
-\item{dat_baseline}{the final data at baseline including each patient's mean random effects from adaptive Markov algorithm, estimated \eqn{F_0(t)}, and
-\eqn{f_0(t)}}
-\item{dat_long}{the final data with patients' all records including each patient's mean random effects from adaptive Markov algorithm, estimated \eqn{F_0(t)},
-and \eqn{f_0(t)}}
+\item{dat_baseline}{the final data at baseline including each patient's mean random effects (re1, re2, ...) from adaptive Markov algorithm,
+estimated \eqn{F_0(t)}, and \eqn{f_0(t)}}
+\item{dat_long}{the final data with patients' all records including each patient's mean random effects (re1, re2, ...) from adaptive Markov algorithm,
+estimated \eqn{F_0(t)}, and \eqn{f_0(t)}}
 \item{re_cov}{estimated covariance matrix of random effects}
-\item{am_random_effects}{a list containing each patient's final adaptive Markov chain}
+\item{am_random_effects}{a list containing all patients' final adaptive Markov chains}
 }
 \description{
 Fits a cure model accounting for longitudinal data and flexible patterns of hazard ratios over time
