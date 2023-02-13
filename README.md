@@ -119,7 +119,22 @@ This joint model has repeatedly measured biomarker values as the outcome of the
 longitudinal submodel with measurement times as the 
 covariate and treatment as the short- and long-term covariate in the cure 
 submodel. These two submodels share individual random effects.
-We call the function *fhcmodel*, and the following command is used.
+
+We explore the data a little bit to see the Kaplan-Meier curves by treatment.
+
+```{r}
+library(survival)
+library(dplyr)
+library(survminer)
+dat_base <- jmfhc_dat %>%
+  group_by(patient.id) %>%
+  slice_head(n = 1)
+
+fit <- survfit(Surv(event.time, event)~trt, data = dat_base)
+ggsurvplot(fit, data = dat_base)
+```
+
+We call the function *jmfhc_point_est* for point estimation, and the following command is used.
 
 ```{r}
 result_coef <- jmfhc_point_est(data=jmfhc_dat, 
