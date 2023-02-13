@@ -134,6 +134,8 @@ fit <- survfit(Surv(event.time, event)~trt, data = dat_base)
 ggsurvplot(fit, data = dat_base)
 ```
 
+![](example_trt_km.png)
+
 We call the function *jmfhc_point_est* for point estimation, and the following command is used.
 
 ```{r}
