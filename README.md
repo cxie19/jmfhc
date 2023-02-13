@@ -136,6 +136,8 @@ ggsurvplot(fit, data = dat_base)
 
 ![](example_trt_km.png)
 
+We can see the crossing of Kaplan-Meier curves by treatment, indicating the variable treatment's violation of proportional hazards assumption.
+
 We call the function *jmfhc_point_est* for point estimation, and the following command is used.
 
 ```{r}
