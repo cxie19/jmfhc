@@ -34,7 +34,7 @@ categorical variable(s). The categorical variables need to be converted into dum
 \item{beta_variable}{the variable name(s) defined as long-term covariate(s) in the model, which cannot be NULL.}
 
 \item{gamma_variable}{the variable name(s) defined as short-term covariate(s) in the model. By default gamma_variable = NULL.
-If there is no defined short-term covariate, the joint model becomes a proportional hazards cure submodel.}
+If there is no defined short-term covariate, the cure submodel of the joint model becomes a proportional hazards cure submodel.}
 
 \item{fu_measure}{the variable name of repeatedly measured outcome (e.g., a biomarker).}
 
