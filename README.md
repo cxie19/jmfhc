@@ -146,8 +146,12 @@ result_coef <- jmfhc_point_est(data=jmfhc_dat,
                                id="patient.id", 
                                beta_variable="trt", gamma_variable="trt", 
                                fu_measure="measure", fu_time_variable="mes.times")
+                               round(result_coef[["coef"]],4)
+round(result_coef[["coef"]],4)
 ```
-The running time of this point estimation (result_coef) is about 1.25 hours.<br /> 
+       beta_intercept beta_trt beta_re1 beta_re2 gamma_trt fixed_1 fixed_2 re_sd_1 re_sd_2 re_rho_12 error_sd
+[1,]        -0.1383    1.1691   0.5756  -0.7657    0.8558  5.0171 -1.0242  0.8431  0.4971    0.0616   0.9878
+
 With the estimated regression parameters from *result_coef*, 
 we compute the cure rates for patient subgroups 
 receiving treatment A and treatment B.
