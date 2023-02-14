@@ -149,7 +149,7 @@ result_coef <- jmfhc_point_est(data=jmfhc_dat,
                                round(result_coef[["coef"]],4)
 round(result_coef[["coef"]],4)
 ```
-beta_intercept beta_trt beta_re1 beta_re2 gamma_trt fixed_1 fixed_2 re_sd_1 re_sd_2 re_rho_12 error_sd <\br>
+beta_intercept beta_trt beta_re1 beta_re2 gamma_trt fixed_1 fixed_2 re_sd_1 re_sd_2 re_rho_12 error_sd <br/>
     -0.1383     1.1691   0.5756  -0.7657    0.8558  5.0171 -1.0242  0.8431  0.4971    0.0616   0.9878
 
 With the estimated regression parameters from *result_coef*, 
