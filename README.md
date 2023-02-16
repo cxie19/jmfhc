@@ -24,10 +24,12 @@ $\boldsymbol{t_i}$ denoted as $\boldsymbol{b_i}$ are shown as
 
 $$
   \boldsymbol{b_i}(\boldsymbol{t_i})=
-  \boldsymbol{D_i}\boldsymbol{\phi}+\boldsymbol{D_i}\boldsymbol{\alpha_i}+\boldsymbol{\epsilon_i},
+  \boldsymbol{H_i}\boldsymbol{\zeta}+\boldsymbol{D_i}\boldsymbol{\phi}+\boldsymbol{D_i}\boldsymbol{\alpha_i}+\boldsymbol{\epsilon_i},
 $$
 
-where $\boldsymbol{D_i}$ is a $n_i \times p^\ast$ design matrix for fixed effects 
+where $\boldsymbol{H_i}$ is a $n_i \times q^*$ matrix for subject $i$'s baseline covariates at measurement times, and its rows are the same and contain any covariates of $\boldsymbol{z_i}$ and $\boldsymbol{x_i}$;
+$\boldsymbol{\zeta}$ is a $q^*$-length vector of fixed-effect regression parameters for $\boldsymbol{H_i}$;
+$\boldsymbol{D_i}$ is a $n_i \times p^\ast$ design matrix for fixed effects 
 with the first column as 1's and the reminding $(p^\ast-1)$ columns containing 
 a biomarker's measurement time points using fractional polynomials (e.g., $\boldsymbol{t_i},\log(\boldsymbol{t_i}),\boldsymbol{t_i}^2$);
 $\boldsymbol{\phi}$ is a $p^\ast$-length fixed-effect regression parameter vector;
