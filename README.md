@@ -148,7 +148,6 @@ result_coef <- jmfhc_point_est(data=jmfhc_dat,
                                id="patient.id", 
                                beta_variable="trt", gamma_variable="trt", 
                                fu_measure="measure", fu_time_variable="mes.times")
-                               round(result_coef[["coef"]],4)
 round(result_coef[["coef"]],4)
 ```
 The results of parameter estiamtes are beta_intercept =-0.1383, beta_trt=1.1691, beta_re1=0.5756, beta_re2=-0.7657, gamma_trt=0.8558, fixed_1=5.0171, fixed_2=-1.0242, re_sd_1= 0.8431, re_sd_2=0.4971, re_rho_12=0.0616, and error_sd=0.9878.
