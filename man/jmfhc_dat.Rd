@@ -23,7 +23,7 @@ jmfhc_dat
 }
 \description{
 This toy data set with a cure fraction contains 500 patients' time-to-event outcomes, baseline information,
-and a biomarker's repeated measured values.
+and a biomarker's repeated measured values and measurement time points.
 }
 \examples{
 data(jmfhc_dat)

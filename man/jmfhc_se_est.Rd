@@ -13,6 +13,7 @@ jmfhc_se_est(
   gamma_variable = NULL,
   fu_measure,
   fu_time_variable,
+  baseline_var_lmm = NULL,
   max.int = 200,
   no_cores = 5,
   no_cores_jackknife = 5,
@@ -23,8 +24,9 @@ jmfhc_se_est(
 )
 }
 \arguments{
-\item{data}{a data.frame with no missing values contains observed survival time, event status, any continuous variable(s) and/or dummy variable(s)
-of categorical variable(s). The categorical variables need to be converted into dummy variables before fitting the function.}
+\item{data}{a data.frame in a long format with no missing values contains patients' id, observed survival time, event status, any continuous variable(s) and/or dummy variable(s) of
+categorical variable(s) at baseline, and longitudinal measurements with the corresponding measurement time points. The categorical variables with more than two levels need to be
+converted into dummy variables before fitting the function.}
 
 \item{event_time}{the variable name of observed survival time in the data.}
 
@@ -37,9 +39,12 @@ of categorical variable(s). The categorical variables need to be converted into 
 \item{gamma_variable}{the variable name(s) defined as short-term covariate(s) in the model. By default gamma_variable = NULL.
 If there is no defined short-term covariate, the cure submodel of the joint model becomes a proportional hazards cure submodel.}
 
-\item{fu_measure}{the variable name of repeatedly measured outcome (e.g., a biomarker).}
+\item{fu_measure}{the variable name of repeatedly measured outcome (e.g., a biomarker) in the original form or any transformation
+used as the outcome of the longitudinal submodel (linear mixed-effects model).}
 
 \item{fu_time_variable}{the variable name(s) of fractional polynomials of measurement times for the longitudinal measurements.}
+
+\item{baseline_var_lmm}{the baseline variable name(s) in the longitudinal submodel. By default baseline_var_lmm = NULL.}
 
 \item{max.int}{maximum number of iterations. The default is 200.}
 
