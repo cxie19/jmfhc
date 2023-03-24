@@ -647,8 +647,12 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
 
   cat("Point estimation is done.","\n")
 
-  return(list(coef=result.coef,iter=iteration,dat_baseline=dat_base,dat_long = data,
+  return(list(coef=result.coef,iter=iteration,
+              dat_baseline=dat_base,dat_long = data,
               re_cov=prior_Sigma_k2,
+              setting=list(event_time=event_time, event_status=event_status, id=id,
+                           beta_variable=beta_variable, gamma_variable=gamma_variable,
+                           fu_measure=fu_measure, fu_time_variable=fu_time_variable, baseline_var_lmm=baseline_var_lmm),
               am_random_effects=sample))
 
 }
