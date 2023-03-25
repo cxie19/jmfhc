@@ -13,8 +13,11 @@
 #' If there is no defined short-term covariate, the cure submodel of the joint model becomes a proportional hazards cure submodel.
 #' @param fu_measure the variable name of repeatedly measured outcome (e.g., a biomarker) in the original form or any transformation
 #' used as the outcome of the longitudinal submodel (linear mixed-effects model).
-#' @param fu_time_variable the variable name(s) of fractional polynomials of measurement times for the longitudinal measurements.
-#' @param baseline_var_lmm the baseline variable name(s) in the longitudinal submodel. By default baseline_var_lmm = NULL.
+#' @param fu_time_original the variable name of longitudinal measurement times in the original form.
+#' The measurement times and survival times (event_time) need to be in the same unit.
+#' @param fu_time_variable the variable name(s) of fractional polynomials of measurement times used as the fixed effect(s) and random effect(s) in
+#' the longitudinal submodel.
+#' @param baseline_var_lmm the baseline variable name(s) as the fixed effects in the longitudinal submodel. By default baseline_var_lmm = NULL.
 #' @param max.int maximum number of iterations. The default is 200.
 #' @param no_cores the number of cores used during the estimation. The default is 9.
 #' @param absconverge.par absolute difference \eqn{(current-previous)} for regression parameters as the convergence criteria. The default is 1e-3.
@@ -36,10 +39,12 @@
 #' @examples data(jmfhc_dat)
 #' result_coef <- jmfhc_point_est(data=jmfhc_dat, event_time="event.time", event_status="event",
 #'                                id="patient.id", beta_variable="trt", gamma_variable="trt",
-#'                                fu_measure="measure", fu_time_variable="mes.times")
+#'                                fu_measure="measure", fu_time_original="mes.times",
+#'                                fu_time_variable="mes.times")
 #' result_coef <- jmfhc_point_est(data=jmfhc_dat, event_time="event.time", event_status="event",
 #'                                id="patient.id", beta_variable="trt",
-#'                                fu_measure="measure", fu_time_variable="mes.times")
+#'                                fu_measure="measure", fu_time_original="mes.times",
+#'                                fu_time_variable="mes.times")
 #' result$coef
 #' @import dplyr
 #' @import lme4
@@ -54,7 +59,7 @@
 #'
 jmfhc_point_est <- function(data, event_time, event_status, id,
                             beta_variable, gamma_variable=NULL,
-                            fu_measure, fu_time_variable, baseline_var_lmm=NULL,
+                            fu_measure, fu_time_original, fu_time_variable, baseline_var_lmm=NULL,
                             max.int=200, no_cores=9,
                             absconverge.par=1e-3, relconverge.par=2e-3,
                             absconverge.F0t=2e-3, relconverge.F0t=5e-3){
@@ -652,7 +657,8 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
               re_cov=prior_Sigma_k2,
               setting=list(event_time=event_time, event_status=event_status, id=id,
                            beta_variable=beta_variable, gamma_variable=gamma_variable,
-                           fu_measure=fu_measure, fu_time_variable=fu_time_variable, baseline_var_lmm=baseline_var_lmm),
+                           fu_measure=fu_measure, fu_time_original=fu_time_original,
+                           fu_time_variable=fu_time_variable, baseline_var_lmm=baseline_var_lmm),
               am_random_effects=sample))
 
 }

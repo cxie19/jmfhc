@@ -24,7 +24,7 @@ estcure <- function(object, z_value){
   cure_comp <- function(x) {
     X <- matrix(x,nrow=length_re)
     f <- dmvnorm(x, mean = rep(0,length_re), sigma = Sigma,log=F)
-    return(exp(-exp(coef[seq(1+length(z_value)+length_re)]%*%c(1,z_value,X)))*f)
+    return(exp(-exp(coef[,which(grepl("beta_",colnames(coef)))]%*%c(1,z_value,X)))*f)
   }
   return(pcubature(cure_comp, lowerLimit = c(-Inf, -Inf), upperLimit = c(+Inf,+Inf))$integral)
 }
