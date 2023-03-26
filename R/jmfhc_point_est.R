@@ -3,8 +3,11 @@
 #' and returns the point estimation.
 #' Tied failure times are dealt with Breslow approximation.
 #' @param data a data.frame in a long format with no missing values contains patients' id, observed survival time, event status, any continuous variable(s) and/or dummy variable(s) of
-#' categorical variable(s) at baseline, and longitudinal measurements with the corresponding measurement time points. The categorical variables with more than two levels need to be
-#' converted into dummy variables before fitting the function.
+#' categorical variable(s) at baseline, and longitudinal measurements with the corresponding measurement time points. The baseline categorical variables with more than two levels need to be
+#' converted into dummy variables before fitting the function. The longitudinal measurements could be in the original form or the transformed form(s) for the longitudinal submodel fitting.
+#' The data set needs to contain the original form of measurement time points in the same unit of observed survival times. If transformed forms of measurement time points are used for
+#' longitudinal submodel fitting, the data set also needs to have columns for the transformed forms of measurement time points. All patients need to have at least two measurements
+#' including the baseline.
 #' @param event_time the variable name of observed survival time in the data.
 #' @param event_status the variable name of event status in the data.
 #' @param id the variable name of patient id in the data.
@@ -68,6 +71,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   colnames(data)[(colnames(data)==id)] <- "id"
   dat_base <- data %>%
     group_by(id) %>%
+    arrange(fu_time_original) %>%
     slice_head(n = 1)
   n <- nrow(dat_base)
 

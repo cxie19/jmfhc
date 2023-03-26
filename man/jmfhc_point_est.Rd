@@ -25,8 +25,11 @@ jmfhc_point_est(
 }
 \arguments{
 \item{data}{a data.frame in a long format with no missing values contains patients' id, observed survival time, event status, any continuous variable(s) and/or dummy variable(s) of
-categorical variable(s) at baseline, and longitudinal measurements with the corresponding measurement time points. The categorical variables with more than two levels need to be
-converted into dummy variables before fitting the function.}
+categorical variable(s) at baseline, and longitudinal measurements with the corresponding measurement time points. The baseline categorical variables with more than two levels need to be
+converted into dummy variables before fitting the function. The longitudinal measurements could be in the original form or the transformed form(s) for the longitudinal submodel fitting.
+The data set needs to contain the original form of measurement time points in the same unit of observed survival times. If transformed forms of measurement time points are used for
+longitudinal submodel fitting, the data set also needs to have columns for the transformed forms of measurement time points. All patients need to have at least two measurements
+including the baseline.}
 
 \item{event_time}{the variable name of observed survival time in the data.}
 
