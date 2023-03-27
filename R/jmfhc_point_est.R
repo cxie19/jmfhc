@@ -167,7 +167,11 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
                                          +(exp(gammas%*%unlist(data[1,X_var]))-1)*log(data$base_cdf[1])+log(data$base_f[1])),0)
     S <- -exp(betas%*%c(1,unlist(data[1,beta_variable]),pars))*(data$base_cdf[1]^(exp(gammas%*%unlist(data[1,X_var]))))
     D_i <- matrix(c(rep(1,nrow(data)),data[,fu_time_variable]),ncol=length_lmm_var)
-    D_H_i <- matrix(c(rep(1,nrow(data)),data[,fu_time_variable],data[,baseline_var_lmm]),ncol=length_lmm_var+length(baseline_var_lmm))
+    if(is.null(baseline_var_lmm)){
+      D_H_i <- matrix(c(rep(1,nrow(data)),data[,fu_time_variable]),ncol=length_lmm_var)
+    }else{
+      D_H_i <- matrix(c(rep(1,nrow(data)),data[,fu_time_variable],data[,baseline_var_lmm]),ncol=length_lmm_var+length(baseline_var_lmm))
+    }
     f_biomarker <- dmvnorm(data[,fu_measure],mean=D_H_i%*%fixed+D_i%*%pars,sigma=diag(rep(sigma_error^2,nrow(data))),log=T)
     return(prior+h+S+f_biomarker)
   }
@@ -207,7 +211,11 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   #### Step 3: Estimate longitudinal parameters ####
   # estimate fixed effects
   est_fixed <- function(data){ # long version of data
-    D_H_full <- matrix(c(rep(1,nrow(data)),data[,fu_time_variable],data[,baseline_var_lmm]), ncol=length_lmm_var+length(baseline_var_lmm))
+    if(is.null(baseline_var_lmm)){
+      D_H_full <- matrix(c(rep(1,nrow(data)),data[,fu_time_variable]), ncol=length_lmm_var)
+    }else{
+      D_H_full <- matrix(c(rep(1,nrow(data)),data[,fu_time_variable],data[,baseline_var_lmm]), ncol=length_lmm_var+length(baseline_var_lmm))
+    }
     D_full_re <- sapply(dat_base$id,function(x)
       matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_variable]),ncol=length_lmm_var)%*%t(data[data$id==x,random_effects][1,]))
     b_star <- matrix(data[,fu_measure]-unlist(D_full_re), ncol=1)
@@ -217,8 +225,13 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   fixed_k1 <- est_fixed(data=data)
 
   # estimate sd of error term
-  D_H_full_fixed <- sapply(dat_base$id,function(x)
-    matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_variable],data[data$id==x,baseline_var_lmm]), ncol=length_lmm_var+length(baseline_var_lmm))%*%fixed_k1)
+  if(is.null(baseline_var_lmm)){
+    D_H_full_fixed <- sapply(dat_base$id,function(x)
+      matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_variable]), ncol=length_lmm_var)%*%fixed_k1)
+  }else{
+    D_H_full_fixed <- sapply(dat_base$id,function(x)
+      matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_variable],data[data$id==x,baseline_var_lmm]), ncol=length_lmm_var+length(baseline_var_lmm))%*%fixed_k1)
+  }
   cl <- makeCluster(no_cores)
   registerDoSNOW(cl)
   quadratic <-  foreach(i=seq(nrow(sample[[1]])),.combine="c")%dopar%{
@@ -441,8 +454,13 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   # estimate fixed effects
   fixed_k2 <- est_fixed(data=data)
   # estimate sd of error term
-  D_H_full_fixed <- sapply(dat_base$id,function(x)
-    matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_variable],data[data$id==x,baseline_var_lmm]),ncol=length_lmm_var+length(baseline_var_lmm))%*%fixed_k2)
+  if(is.null(baseline_var_lmm)){
+    D_H_full_fixed <- sapply(dat_base$id,function(x)
+      matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_variable]),ncol=length_lmm_var)%*%fixed_k2)
+  }else{
+    D_H_full_fixed <- sapply(dat_base$id,function(x)
+      matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_variable],data[data$id==x,baseline_var_lmm]),ncol=length_lmm_var+length(baseline_var_lmm))%*%fixed_k2)
+  }
   cl <- makeCluster(no_cores)
   registerDoSNOW(cl)
   quadratic <-  foreach(i=seq(nrow(sample[[1]])),.combine="c")%dopar%{
@@ -558,8 +576,13 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
     # estimate fixed effects
     fixed_k2 <- est_fixed(data=data)
     # estimate sd of error term
-    D_H_full_fixed <- sapply(dat_base$id,function(x)
-      matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_variable],data[data$id==x,baseline_var_lmm]),ncol=length_lmm_var+length(baseline_var_lmm))%*%fixed_k2)
+    if(is.null(baseline_var_lmm)){
+      D_H_full_fixed <- sapply(dat_base$id,function(x)
+        matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_variable]),ncol=length_lmm_var)%*%fixed_k2)
+    }else{
+      D_H_full_fixed <- sapply(dat_base$id,function(x)
+        matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_variable],data[data$id==x,baseline_var_lmm]),ncol=length_lmm_var+length(baseline_var_lmm))%*%fixed_k2)
+    }
     cl <- makeCluster(no_cores)
     registerDoSNOW(cl)
     quadratic <-  foreach(i=seq(nrow(sample[[1]])),.combine="c")%dopar%{
@@ -630,23 +653,43 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
 
   if (!is.null(gamma_variable)){
     result.coef <- matrix(c(beta0_k2,beta_k2,gamma_k2,fixed_k2,prior_Sigma_diag_k2,prior_Sigma_rho_k2, sigma_error_k2),nrow=1)
-    colnames(result.coef) <- c("beta_intercept",paste0("beta_",Z_var),
-                               paste0("gamma_",X_var),
-                               paste0("fixed_time_intercept"),
-                               paste0("fixed_time_",seq(length_lmm_var-1)),
-                               paste0("fixed_base_",baseline_var_lmm),
-                               paste0("re_sd_",seq(length_lmm_var)),
-                               paste0("re_rho_",rho_num),
-                               "error_sd")
+    if (is.null(baseline_var_lmm)){
+      colnames(result.coef) <- c("beta_intercept",paste0("beta_",Z_var),
+                                 paste0("gamma_",X_var),
+                                 paste0("fixed_time_intercept"),
+                                 paste0("fixed_time_",seq(length_lmm_var-1)),
+                                 paste0("re_sd_",seq(length_lmm_var)),
+                                 paste0("re_rho_",rho_num),
+                                 "error_sd")
+    }else{
+      colnames(result.coef) <- c("beta_intercept",paste0("beta_",Z_var),
+                                 paste0("gamma_",X_var),
+                                 paste0("fixed_time_intercept"),
+                                 paste0("fixed_time_",seq(length_lmm_var-1)),
+                                 paste0("fixed_base_",baseline_var_lmm),
+                                 paste0("re_sd_",seq(length_lmm_var)),
+                                 paste0("re_rho_",rho_num),
+                                 "error_sd")
+    }
+
   }else{
     result.coef <- matrix(c(beta0_k2,beta_k2,fixed_k2,prior_Sigma_diag_k2,prior_Sigma_rho_k2,sigma_error_k2),nrow=1)
-    colnames(result.coef) <- c("beta_intercept",paste0("beta_",Z_var),
-                               paste0("fixed_time_intercept"),
-                               paste0("fixed_time_",seq(length_lmm_var-1)),
-                               paste0("fixed_base_",baseline_var_lmm),
-                               paste0("re_sd_",seq(length_lmm_var)),
-                               paste0("re_rho_",rho_num),
-                               "error_sd")
+    if (is.null(baseline_var_lmm)){
+      colnames(result.coef) <- c("beta_intercept",paste0("beta_",Z_var),
+                                 paste0("fixed_time_intercept"),
+                                 paste0("fixed_time_",seq(length_lmm_var-1)),
+                                 paste0("re_sd_",seq(length_lmm_var)),
+                                 paste0("re_rho_",rho_num),
+                                 "error_sd")
+    }else{
+      colnames(result.coef) <- c("beta_intercept",paste0("beta_",Z_var),
+                                 paste0("fixed_time_intercept"),
+                                 paste0("fixed_time_",seq(length_lmm_var-1)),
+                                 paste0("fixed_base_",baseline_var_lmm),
+                                 paste0("re_sd_",seq(length_lmm_var)),
+                                 paste0("re_rho_",rho_num),
+                                 "error_sd")
+    }
   }
 
   remove <- which(colnames(dat_base)=="mu_exp_re")
