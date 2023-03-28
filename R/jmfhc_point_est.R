@@ -36,6 +36,7 @@
 #'     \item{dat_long}{the final data with patients' all records including each patient's mean random effects (re1, re2, ...) from adaptive Markov algorithm,
 #'                     estimated \eqn{F_0(t)}, and \eqn{f_0(t)}}
 #'     \item{re_cov}{estimated covariance matrix of random effects}
+#'     \item{setting}{a list containing all the specified parameters in the argument for the fitted joint model}
 #'     \item{am_random_effects}{a list containing all patients' final adaptive Markov chains}
 #' @export
 #'
