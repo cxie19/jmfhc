@@ -1,6 +1,6 @@
 #' Estimate cure rates for subgroups
 #' @description Estimates a cure rate for a subgroup of patients with specified characteristics.
-#' @param object an object of jmfhc_point_est.
+#' @param object an object of jmfhc_point_est() function.
 #' @param z_value value(s) of the long-term baseline covariate(s) in the order specified at the argument beta_variable of jmfhc_point_est() function.
 #'
 #' @return an estimated cure rate

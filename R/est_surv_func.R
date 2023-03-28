@@ -1,6 +1,6 @@
 #' Estimate survival functions for subgroups
 #' @description Estimates the survival function for a subgroup of patients with specified characteristics.
-#' @param object an object of jmfhc_point_est.
+#' @param object an object of jmfhc_point_est() function.
 #' @param z_value value(s) of the long-term baseline covariate(s) in the order specified at the argument beta_variable of jmfhc_point_est() function.
 #' @param x_value value(s) of the short-term baseline covariate(s) in the order specified at the argument gamma_variable of jmfhc_point_est() function.
 #' If gamma is set as NULL in the jmfhc_point_est() function, then there is no need to put values here. The default is NULL.

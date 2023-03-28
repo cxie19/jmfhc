@@ -7,7 +7,7 @@
 est_surv_func(object, z_value, x_value = NULL, n.random = 1000)
 }
 \arguments{
-\item{object}{an object of jmfhc_point_est.}
+\item{object}{an object of jmfhc_point_est() function.}
 
 \item{z_value}{value(s) of the long-term baseline covariate(s) in the order specified at the argument beta_variable of jmfhc_point_est() function.}
 
