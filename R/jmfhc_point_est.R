@@ -14,6 +14,7 @@
 #' @param beta_variable the variable name(s) defined as long-term covariate(s) in the model, which cannot be NULL.
 #' @param gamma_variable the variable name(s) defined as short-term covariate(s) in the model. By default gamma_variable = NULL.
 #' If there is no defined short-term covariate, the cure submodel of the joint model becomes a proportional hazards cure submodel.
+#' @param fu_measure_original the variable name of repeatedly measured outcome (e.g., a biomarker) in the original form.
 #' @param fu_measure the variable name of repeatedly measured outcome (e.g., a biomarker) in the original form or any transformation
 #' used as the outcome of the longitudinal submodel (linear mixed-effects model).
 #' @param fu_time_original the variable name of longitudinal measurement times in the original form.
@@ -705,8 +706,9 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
               re_cov=prior_Sigma_k2,
               setting=list(event_time=event_time, event_status=event_status, id=id,
                            beta_variable=beta_variable, gamma_variable=gamma_variable,
-                           fu_measure=fu_measure, fu_time_original=fu_time_original,
-                           fu_time_variable=fu_time_variable, baseline_var_lmm=baseline_var_lmm),
+                           fu_measure_original=fu_measure_original, fu_measure=fu_measure,
+                           fu_time_original=fu_time_original, fu_time_variable=fu_time_variable,
+                           baseline_var_lmm=baseline_var_lmm),
               am_random_effects=sample))
 
 }

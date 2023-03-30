@@ -64,6 +64,8 @@ the longitudinal submodel.}
 \item{absconverge.F0t}{the average of absolute differences for \eqn{F_0(t)} as the convergence criteria. The default is 2e-3.}
 
 \item{relconverge.F0t}{the average of relative differences for \eqn{F_0(t)} as the convergence criteria. The default is 5e-3.}
+
+\item{fu_measure_original}{the variable name of repeatedly measured outcome (e.g., a biomarker) in the original form.}
 }
 \value{
 a list containing results of the fit. The following items coef, iter, dat_baseline, dat_long, re_cov, and am_random_effects are returned.
