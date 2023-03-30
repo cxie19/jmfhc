@@ -42,14 +42,16 @@
 #' @export
 #'
 #' @examples data(jmfhc_dat)
+#' #jmfhc
 #' result_coef <- jmfhc_point_est(data=jmfhc_dat, event_time="event.time", event_status="event",
 #'                                id="patient.id", beta_variable="trt", gamma_variable="trt",
-#'                                fu_measure="measure", fu_time_original="mes.times",
-#'                                fu_time_variable="mes.times")
+#'                                fu_measure_original="measure",fu_measure="measure",
+#'                                fu_time_original="mes.times",fu_time_variable="mes.times")
+#' #jmphc (no gamma variable)
 #' result_coef <- jmfhc_point_est(data=jmfhc_dat, event_time="event.time", event_status="event",
 #'                                id="patient.id", beta_variable="trt",
-#'                                fu_measure="measure", fu_time_original="mes.times",
-#'                                fu_time_variable="mes.times")
+#'                                fu_measure_original="measure",fu_measure="measure",
+#'                                fu_time_original="mes.times",fu_time_variable="mes.times")
 #' result$coef
 #' @import dplyr
 #' @import lme4
