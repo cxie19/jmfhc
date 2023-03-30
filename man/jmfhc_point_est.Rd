@@ -11,6 +11,7 @@ jmfhc_point_est(
   id,
   beta_variable,
   gamma_variable = NULL,
+  fu_measure_original,
   fu_measure,
   fu_time_original,
   fu_time_variable,
@@ -42,6 +43,8 @@ including the baseline.}
 \item{gamma_variable}{the variable name(s) defined as short-term covariate(s) in the model. By default gamma_variable = NULL.
 If there is no defined short-term covariate, the cure submodel of the joint model becomes a proportional hazards cure submodel.}
 
+\item{fu_measure_original}{the variable name of repeatedly measured outcome (e.g., a biomarker) in the original form.}
+
 \item{fu_measure}{the variable name of repeatedly measured outcome (e.g., a biomarker) in the original form or any transformation
 used as the outcome of the longitudinal submodel (linear mixed-effects model).}
 
@@ -64,8 +67,6 @@ the longitudinal submodel.}
 \item{absconverge.F0t}{the average of absolute differences for \eqn{F_0(t)} as the convergence criteria. The default is 2e-3.}
 
 \item{relconverge.F0t}{the average of relative differences for \eqn{F_0(t)} as the convergence criteria. The default is 5e-3.}
-
-\item{fu_measure_original}{the variable name of repeatedly measured outcome (e.g., a biomarker) in the original form.}
 }
 \value{
 a list containing results of the fit. The following items coef, iter, dat_baseline, dat_long, re_cov, and am_random_effects are returned.

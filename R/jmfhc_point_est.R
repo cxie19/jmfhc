@@ -66,7 +66,8 @@
 #'
 jmfhc_point_est <- function(data, event_time, event_status, id,
                             beta_variable, gamma_variable=NULL,
-                            fu_measure, fu_time_original, fu_time_variable, baseline_var_lmm=NULL,
+                            fu_measure_original,fu_measure,
+                            fu_time_original, fu_time_variable, baseline_var_lmm=NULL,
                             max.int=200, no_cores=9,
                             absconverge.par=1e-3, relconverge.par=2e-3,
                             absconverge.F0t=2e-3, relconverge.F0t=5e-3){
