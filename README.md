@@ -24,24 +24,24 @@ $\boldsymbol{t_i}$ denoted as $\boldsymbol{b_i}$ are shown as
 
 $$
   \boldsymbol{b_i}(\boldsymbol{t_i})=
-  \boldsymbol{H_i}\boldsymbol{\zeta}+\boldsymbol{D_i}\boldsymbol{\phi}+\boldsymbol{D_i}\boldsymbol{\alpha_i}+\boldsymbol{\epsilon_i},
+  \boldsymbol{H_i}\boldsymbol{\zeta}+\boldsymbol{D_i}\boldsymbol{\phi}+\boldsymbol{J_i}\boldsymbol{\alpha_i}+\boldsymbol{\epsilon_i},
 $$
 
-where $\boldsymbol{H_i}$ is a $n_i \times q^\ast$ matrix for subject $i$'s baseline covariates at measurement times, and its rows are the same and contain any covariates of $\boldsymbol{z_i}$ and $\boldsymbol{x_i}$;
-$\boldsymbol{\zeta}$ is a $q^\ast$-length vector of fixed-effect regression parameters for $\boldsymbol{H_i}$;
-$\boldsymbol{D_i}$ is a $n_i \times p^\ast$ design matrix for fixed effects 
-with the first column as 1's and the reminding $(p^\ast-1)$ columns containing 
-a biomarker's measurement time points using fractional polynomials (e.g., $\boldsymbol{t_i},\log(\boldsymbol{t_i}),\boldsymbol{t_i}^2$);
-$\boldsymbol{\phi}$ is a $p^\ast$-length fixed-effect regression parameter vector;
-$\boldsymbol{\alpha_i}$ is a $p^\ast$-length random-effect regression parameter 
-vector following a multivariate normal distribution $N_{p\ast}(\boldsymbol{0},\boldsymbol{\Sigma})$ and the unstructured 
-covariance matrix $\boldsymbol{\Sigma}$ containing elements 
-of $\sigma_1,...,\sigma_{p^\ast}$ and $\rho_{jm}$, for $j,m = 1,...,p^\ast$ and 
-$j \neq m$; 
-and $\boldsymbol{\epsilon_i}$ is a $n_i$-length vector of measurement errors 
-following a multivariate normal distribution $N_{n_i}(\boldsymbol{0},\boldsymbol{R_i}=\sigma_{\epsilon}^2\boldsymbol{I_{n_i}})$.
-Here all $\boldsymbol{\alpha_i}$ and $\boldsymbol{\epsilon_i}$ are 
-mutually independent.
+where $\boldsymbol{H_i}$ is an $n_i \times p^*$ matrix for subject $i$'s baseline covariates at measurement times, and its rows are the same and contain any covariates of $\boldsymbol{z_i}$ and $\boldsymbol{x_i}$;
+$\boldsymbol{\zeta}$ is a $p^*$-length vector of fixed-effect regression parameters for $\boldsymbol{H_i}$;
+$\boldsymbol{D_i}$ and $\boldsymbol{J_i}$ are an $n_i \times q^*$ design matrix for fixed effects and an $n_i \times r^*$ design matrix for random effects, respectively, with the first columns as 1's and the reminding columns containing subject 
+$i$'s functions of biomarker measurement time points (e.g., $\boldsymbol{t_i},\log(\boldsymbol{t_i}),\boldsymbol{t_i}^2$), 
+and $\boldsymbol{D_i}$ and $\boldsymbol{J_i}$ can have overlapping columns;
+$\boldsymbol{\phi}$ is a $q^*$-length fixed-effect regression parameter vector containing an intercept for $\boldsymbol{D_i}$;
+and $\boldsymbol{\alpha_i}$ is a $r^*$-length random-effect regression parameter vector for $\boldsymbol{J_i}$ containing a subject-specific intercept and following a multivariate normal distribution $\mathcal{N}_{r^*}(\boldsymbol{0},\boldsymbol{\Sigma})$ and the unstructured covariance matrix $\boldsymbol{\Sigma}$ containing elements of $\sigma_1,...,\sigma_{r^*}$ and $\rho_{jm}$, for $j,m = 1,...,r^*$ and $j \neq m$.
+Then the observed values of the biomarker denoted as $\boldsymbol{b_i}$ for subject $i$ are shown as 
+\begin{equation}
+\label{eq:linear_mixed_effects_model}
+  \boldsymbol{b_i}(\boldsymbol{t_i})=\boldsymbol{B_i}(\boldsymbol{t_i})+\boldsymbol{\epsilon_i}
+  =\boldsymbol{H_i}\boldsymbol{\zeta}+\boldsymbol{D_i}\boldsymbol{\phi}+\boldsymbol{J_i}\boldsymbol{\alpha_i}+\boldsymbol{\epsilon_i},
+\end{equation}
+where $\boldsymbol{\epsilon_i}$ is an $n_i$-length vector of measurement errors following a multivariate normal distribution $\mathcal{N}_{n_i}(\boldsymbol{0},\boldsymbol{R_i}=\sigma_{\epsilon}^2\boldsymbol{I_{n_i}})$.
+Here all $\boldsymbol{\alpha_i}$ and $\boldsymbol{\epsilon_i}$ are mutually independent.
 
 The survival function in our joint model (i.e., JMFHC) for subject $i$ at time 
 $T$ conditional on covariates $\boldsymbol{z_i}$ and $\boldsymbol{x_i}$ 
@@ -143,12 +143,11 @@ We can see the crossing of Kaplan-Meier curves by treatment, indicating the vari
 We call the function *jmfhc_point_est* for point estimation, and the following command is used.
 
 ```{r}
-result_coef <- jmfhc_point_est(data=jmfhc_dat, 
-                               event_time="event.time", event_status="event", 
-                               id="patient.id", 
-                               beta_variable="trt", gamma_variable="trt", 
-                               fu_measure_original="measure", fu_measure="measure",                                         
-                               fu_time_original="mes.times",fu_time_variable="mes.times")
+result_coef <- jmfhc_point_est(data=jmfhc_dat, event_time="event.time", event_status="event",
+                               id="patient.id", beta_variable="trt", gamma_variable="trt",
+                               fu_measure_original="measure",fu_measure="measure",
+                               fu_time_original="mes.times",fu_time_fixed_variable="mes.times",
+                               fu_time_random_variable="mes.times")
 round(result_coef[["coef"]],4)
 ```
 The results of parameter estiamtes are beta_intercept =-0.1383, beta_trt=1.1691, beta_re1=0.5756, beta_re2=-0.7657, gamma_trt=0.8558, fixed_1=5.0171, fixed_2=-1.0242, re_sd_1= 0.8431, re_sd_2=0.4971, re_rho_12=0.0616, and error_sd=0.9878.
