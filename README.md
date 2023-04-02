@@ -146,7 +146,7 @@ result_coef <- jmfhc_point_est(data=jmfhc_dat, event_time="event.time", event_st
                                fu_time_random_variable="mes.times")
 round(result_coef[["coef"]],4)
 ```
-The results of parameter estiamtes are beta_intercept =-0.1383, beta_trt=1.1691, beta_re1=0.5756, beta_re2=-0.7657, gamma_trt=0.8558, fixed_1=5.0171, fixed_2=-1.0242, re_sd_1= 0.8431, re_sd_2=0.4971, re_rho_12=0.0616, and error_sd=0.9878.
+The results of parameter estiamtes are beta_intercept =-0.1374, beta_trt=1.1683, beta_re1=0.5757, beta_re2=-0.7653, gamma_trt=0.8556, fixed_1=5.0177, fixed_2=-1.0242, re_sd_1= 0.8432, re_sd_2=0.4971, re_rho_12=0.0617, and error_sd=0.9881.
                                
 
 With the estimated regression parameters from *result_coef*, 
@@ -161,7 +161,7 @@ estcure(object=result_coef,z_value=1) # treatment B
 ```
 
 The cure rates of patients receiving treatment A and treatment B are 41.48% and 
-10.32%, respectively.<br /> 
+10.34%, respectively.<br /> 
 Meanwhile, with the estimated regression parameters and $F_0(t)$ from 
 *result_coef*,  we estimate the survival functions of these two subgroups 
 of patients.
