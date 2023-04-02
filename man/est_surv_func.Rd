@@ -15,8 +15,6 @@ est_surv_func(object, z_value, x_value = NULL, n.random = 1000)
 If gamma is set as NULL in the jmfhc_point_est() function, then there is no need to put values here. The default is NULL.}
 
 \item{n.random}{the number of randomly generated random effects based on the estimated covariance matrix for random effects. The default is 1000.}
-
-\item{event_time}{the variable name of observed survival time in the data.}
 }
 \value{
 a data.frame with sorted survival times and the corresponding estimated survival probabilities.
@@ -27,7 +25,9 @@ Estimates the survival function for a subgroup of patients with specified charac
 \examples{
 result_coef <- jmfhc_point_est(data=jmfhc_dat, event_time="event.time", event_status="event",
                                id="patient.id", beta_variable="trt", gamma_variable="trt",
-                               fu_measure="measure", fu_time_variable="mes.times")
+                               fu_measure_original="measure",fu_measure="measure",
+                               fu_time_original="mes.times",fu_time_fixed_variable="mes.times",
+                               fu_time_random_variable="mes.times")
 # estimated survival function for patient subgroup receiving treatment A
 survival_trt0 <- est_surv_func(object=result_coef,z_value=0,x_value=0)
 # estimated survival function for patient subgroup receiving treatment B

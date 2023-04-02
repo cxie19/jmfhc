@@ -4,7 +4,6 @@
 #' @param z_value value(s) of the long-term baseline covariate(s) in the order specified at the argument beta_variable of jmfhc_point_est() function.
 #' @param x_value value(s) of the short-term baseline covariate(s) in the order specified at the argument gamma_variable of jmfhc_point_est() function.
 #' If gamma is set as NULL in the jmfhc_point_est() function, then there is no need to put values here. The default is NULL.
-#' @param event_time the variable name of observed survival time in the data.
 #' @param n.random the number of randomly generated random effects based on the estimated covariance matrix for random effects. The default is 1000.
 #'
 #' @return a data.frame with sorted survival times and the corresponding estimated survival probabilities.
@@ -13,7 +12,9 @@
 #' @examples
 #' result_coef <- jmfhc_point_est(data=jmfhc_dat, event_time="event.time", event_status="event",
 #'                                id="patient.id", beta_variable="trt", gamma_variable="trt",
-#'                                fu_measure="measure", fu_time_variable="mes.times")
+#'                                fu_measure_original="measure",fu_measure="measure",
+#'                                fu_time_original="mes.times",fu_time_fixed_variable="mes.times",
+#'                                fu_time_random_variable="mes.times")
 #' # estimated survival function for patient subgroup receiving treatment A
 #' survival_trt0 <- est_surv_func(object=result_coef,z_value=0,x_value=0)
 #' # estimated survival function for patient subgroup receiving treatment B

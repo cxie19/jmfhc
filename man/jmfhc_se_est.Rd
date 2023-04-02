@@ -12,7 +12,8 @@ jmfhc_se_est(
   beta_variable,
   gamma_variable = NULL,
   fu_measure,
-  fu_time_variable,
+  fu_time_fixed_variable,
+  fu_time_random_variable,
   baseline_var_lmm = NULL,
   max.int = 200,
   no_cores = 5,
@@ -45,7 +46,11 @@ If there is no defined short-term covariate, the cure submodel of the joint mode
 \item{fu_measure}{the variable name of repeatedly measured outcome (e.g., a biomarker) in the original form or any transformation
 used as the outcome of the longitudinal submodel (linear mixed-effects model).}
 
-\item{fu_time_variable}{the variable name(s) of fractional polynomials of measurement times for the longitudinal measurements.}
+\item{fu_time_fixed_variable}{the variable name(s) of functions of measurement times used as the fixed effect(s) in
+the longitudinal submodel.}
+
+\item{fu_time_random_variable}{the variable name(s) of functions of measurement times used as the random effect(s) in
+the longitudinal submodel.}
 
 \item{baseline_var_lmm}{the baseline variable name(s) in the longitudinal submodel. By default baseline_var_lmm = NULL.}
 
@@ -78,9 +83,10 @@ Tied failure times are dealt with Breslow approximation.
 data(jmfhc_dat)
 result_se <- jmfhc_se_est(data=jmfhc_dat, event_time="event.time", event_status="event",
                           id="patient.id", beta_variable="trt", gamma_variable="trt",
-                          fu_measure="measure", fu_time_variable="mes.times")
+                          fu_measure="measure", fu_time_fxied_variable="mes.times",
+                          fu_time_random_variable="mes.times")
 result_se <- jmfhc_se_est(data=jmfhc_dat, event_time="event.time", event_status="event",
-                          id="patient.id", beta_variable="trt",
-                          fu_measure="measure", fu_time_variable="mes.times")
+                          id="patient.id", beta_variable="trt", fu_measure="measure",
+                          fu_time_fxied_variable="mes.times",fu_time_random_variable="mes.times")
 result$coef
 }
