@@ -27,13 +27,13 @@ $$
   \boldsymbol{H_i}\boldsymbol{\zeta}+\boldsymbol{D_i}\boldsymbol{\phi}+\boldsymbol{J_i}\boldsymbol{\alpha_i}+\boldsymbol{\epsilon_i},
 $$
 
-where $\boldsymbol{H_i}$ is an $n_i \times p^*$ matrix for subject $i$'s baseline covariates at measurement times, and its rows are the same and contain any covariates of $\boldsymbol{z_i}$ and $\boldsymbol{x_i}$;
-$\boldsymbol{\zeta}$ is a $p^*$-length vector of fixed-effect regression parameters for $\boldsymbol{H_i}$;
-$\boldsymbol{D_i}$ and $\boldsymbol{J_i}$ are an $n_i \times q^*$ design matrix for fixed effects and an $n_i \times r^*$ design matrix for random effects, respectively, with the first columns as 1's and the reminding columns containing subject 
+where $\boldsymbol{H_i}$ is an $n_i \times p^\ast$ matrix for subject $i$'s baseline covariates at measurement times, and its rows are the same and contain any covariates of $\boldsymbol{z_i}$ and $\boldsymbol{x_i}$;
+$\boldsymbol{\zeta}$ is a $p^\ast$-length vector of fixed-effect regression parameters for $\boldsymbol{H_i}$;
+$\boldsymbol{D_i}$ and $\boldsymbol{J_i}$ are an $n_i \times q^\ast$ design matrix for fixed effects and an $n_i \times r^\ast$ design matrix for random effects, respectively, with the first columns as 1's and the reminding columns containing subject 
 $i$'s functions of biomarker measurement time points (e.g., $\boldsymbol{t_i},\log(\boldsymbol{t_i}),\boldsymbol{t_i}^2$), 
 and $\boldsymbol{D_i}$ and $\boldsymbol{J_i}$ can have overlapping columns;
-$\boldsymbol{\phi}$ is a $q^*$-length fixed-effect regression parameter vector containing an intercept for $\boldsymbol{D_i}$;
-and $\boldsymbol{\alpha_i}$ is a $r^*$-length random-effect regression parameter vector for $\boldsymbol{J_i}$ containing a subject-specific intercept and following a multivariate normal distribution $\mathcal{N}_{r^*}(\boldsymbol{0},\boldsymbol{\Sigma})$ and the unstructured covariance matrix $\boldsymbol{\Sigma}$ containing elements of $\sigma_1,...,\sigma_{r^*}$ and $\rho_{jm}$, for $j,m = 1,...,r^*$ and $j \neq m$.
+$\boldsymbol{\phi}$ is a $q^\ast$-length fixed-effect regression parameter vector containing an intercept for $\boldsymbol{D_i}$;
+and $\boldsymbol{\alpha_i}$ is a $r^\ast$-length random-effect regression parameter vector for $\boldsymbol{J_i}$ containing a subject-specific intercept and following a multivariate normal distribution $\mathcal{N}_{r^\ast}(\boldsymbol{0},\boldsymbol{\Sigma})$ and the unstructured covariance matrix $\boldsymbol{\Sigma}$ containing elements of $\sigma_1,...,\sigma_{r^\ast}$ and $\rho_{jm}$, for $j,m = 1,...,r^\ast$ and $j \neq m$.
 Then the observed values of the biomarker denoted as $\boldsymbol{b_i}$ for subject $i$ are shown as 
 \begin{equation}
 \label{eq:linear_mixed_effects_model}
