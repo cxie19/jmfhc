@@ -127,7 +127,9 @@ dat_base <- jmfhc_dat %>%
   slice_head(n = 1)
 
 fit <- survfit(Surv(event.time, event)~trt, data = dat_base)
+png("example_trt_km.png",width = 400, height = 300,res=100)
 ggsurvplot(fit, data = dat_base,title="Kaplan-Meier curves by treatment")
+dev.off()
 ```
 
 ![](example_trt_km.png)
@@ -178,6 +180,7 @@ estimated survival curves.
 est_surv_trt <- rbind(survival_trt0,survival_trt1)
 est_surv_trt$trt <- c(rep(0,each=500),rep(1,each=500))
 est_surv_trt$trt <- as.factor(est_surv_trt$trt)
+png("example_trt_est.png",width = 400, height = 300,res=100)
 ggplot(data=est_surv_trt, aes(x=time, y=survival, group=trt)) +
   geom_line(aes(color=trt),size=1)+
   ylim(0, 1)+
@@ -185,6 +188,7 @@ ggplot(data=est_surv_trt, aes(x=time, y=survival, group=trt)) +
   theme(legend.position = "top")+
   labs(title="Estimated survival functions by treatment",
        x="Time",y="Survival probability",color="Treatment")
+dev.off()
 ```
 
 ![](example_trt_est.png)
