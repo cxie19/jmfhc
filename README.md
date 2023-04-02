@@ -33,7 +33,7 @@ $\boldsymbol{D_i}$ and $\boldsymbol{J_i}$ are an $n_i \times q^\ast$ design matr
 $i$'s functions of biomarker measurement time points (e.g., $\boldsymbol{t_i},\log(\boldsymbol{t_i}),\boldsymbol{t_i}^2$), 
 and $\boldsymbol{D_i}$ and $\boldsymbol{J_i}$ can have overlapping columns;
 $\boldsymbol{\phi}$ is a $q^\ast$-length fixed-effect regression parameter vector containing an intercept for $\boldsymbol{D_i}$;
-$\boldsymbol{\alpha_i}$ is a $r^\ast$-length random-effect regression parameter vector for $\boldsymbol{J_i}$ containing a subject-specific intercept and following a multivariate normal distribution $N_{r^\ast}(\boldsymbol{0},\boldsymbol{\Sigma})$ and the unstructured covariance matrix $\boldsymbol{\Sigma}$ containing elements of $\sigma_1,...,\sigma_{r^\ast}$ and $\rho_{jm}$, for $j,m = 1,...,r^\ast$ and $j \neq m$; 
+$\boldsymbol{\alpha_i}$ is a $r^\ast$-length random-effect regression parameter vector for $\boldsymbol{J_i}$ containing a subject-specific intercept and following a multivariate normal distribution $N_{r^\ast}(\boldsymbol{0},\boldsymbol{\Sigma})$ and the unstructured covariance matrix $\boldsymbol{\Sigma}$ containing elements of $\sigma_1,...,\sigma_{r^\ast}$ and $\rho_{jm}$ , for $j,m = 1,...,r^\ast$ and $j \neq m$; 
 and $\boldsymbol{\epsilon_i}$ is an $n_i$-length vector of measurement errors following a multivariate normal distribution $N_{n_i}(\boldsymbol{0},\boldsymbol{R_i}=\sigma_{\epsilon}^2\boldsymbol{I_{n_i}})$.
 Here all $\boldsymbol{\alpha_i}$ and $\boldsymbol{\epsilon_i}$ are mutually independent.
 
