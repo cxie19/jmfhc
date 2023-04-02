@@ -187,4 +187,4 @@ ggplot(data=est_surv_trt, aes(x=time, y=survival, group=trt)) +
        x="Time",y="Survival probability",color="Treatment")
 ```
 
-![](example_trt_est.png)
+![](example_trt_est.png | width=100)
