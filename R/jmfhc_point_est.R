@@ -178,11 +178,11 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
     h <- ifelse(data[1,event_status]==1,(betas%*%c(1,unlist(data[1,beta_variable]),pars)+gammas%*%unlist(data[1,X_var])
                                          +(exp(gammas%*%unlist(data[1,X_var]))-1)*log(data$base_cdf[1])+log(data$base_f[1])),0)
     S <- -exp(betas%*%c(1,unlist(data[1,beta_variable]),pars))*(data$base_cdf[1]^(exp(gammas%*%unlist(data[1,X_var]))))
-    J_i <- matrix(c(rep(1,nrow(data)),data[,fu_time_random_variable]),ncol=length_lmm_random_var)
+    J_i <- matrix(c(rep(1,nrow(data)),unlist(data[,fu_time_random_variable])),ncol=length_lmm_random_var)
     if(is.null(baseline_var_lmm)){
-      D_H_i <- matrix(c(rep(1,nrow(data)),data[,fu_time_fixed_variable]),ncol=length_lmm_fixed_var)
+      D_H_i <- matrix(c(rep(1,nrow(data)),unlist(data[,fu_time_fixed_variable])),ncol=length_lmm_fixed_var)
     }else{
-      D_H_i <- matrix(c(rep(1,nrow(data)),data[,fu_time_fixed_variable],data[,baseline_var_lmm]),ncol=length_lmm_fixed_var+length(baseline_var_lmm))
+      D_H_i <- matrix(c(rep(1,nrow(data)),unlist(data[,fu_time_fixed_variable]),unlist(data[,baseline_var_lmm])),ncol=length_lmm_fixed_var+length(baseline_var_lmm))
     }
     f_biomarker <- dmvnorm(data[,fu_measure],mean=D_H_i%*%fixed+J_i%*%pars,sigma=diag(rep(sigma_error^2,nrow(data))),log=T)
     return(prior+h+S+f_biomarker)
@@ -224,12 +224,12 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   # estimate fixed effects
   est_fixed <- function(data){ # long version of data
     if(is.null(baseline_var_lmm)){
-      D_H_full <- matrix(c(rep(1,nrow(data)),data[,fu_time_fixed_variable]), ncol=length_lmm_fixed_var)
+      D_H_full <- matrix(c(rep(1,nrow(data)),unlist(data[,fu_time_fixed_variable])), ncol=length_lmm_fixed_var)
     }else{
-      D_H_full <- matrix(c(rep(1,nrow(data)),data[,fu_time_fixed_variable],data[,baseline_var_lmm]), ncol=length_lmm_fixed_var+length(baseline_var_lmm))
+      D_H_full <- matrix(c(rep(1,nrow(data)),unlist(data[,fu_time_fixed_variable]),unlist(data[,baseline_var_lmm])), ncol=length_lmm_fixed_var+length(baseline_var_lmm))
     }
     J_full_re <- sapply(dat_base$id,function(x)
-      matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_random_variable]),ncol=length_lmm_random_var)%*%t(data[data$id==x,random_effects][1,]))
+      matrix(c(rep(1,nrow(data[data$id==x,])),unlist(data[data$id==x,fu_time_random_variable])),ncol=length_lmm_random_var)%*%t(data[data$id==x,random_effects][1,]))
     b_star <- matrix(data[,fu_measure]-unlist(J_full_re), ncol=1)
     fixed <- solve(t(D_H_full)%*%D_H_full)%*%t(D_H_full)%*%b_star
     return(fixed)
@@ -239,16 +239,16 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   # estimate sd of error term
   if(is.null(baseline_var_lmm)){
     D_H_full_fixed <- sapply(dat_base$id,function(x)
-      matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_fixed_variable]), ncol=length_lmm_fixed_var)%*%fixed_k1)
+      matrix(c(rep(1,nrow(data[data$id==x,])),unlist(data[data$id==x,fu_time_fixed_variable])), ncol=length_lmm_fixed_var)%*%fixed_k1)
   }else{
     D_H_full_fixed <- sapply(dat_base$id,function(x)
-      matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_fixed_variable],data[data$id==x,baseline_var_lmm]), ncol=length_lmm_fixed_var+length(baseline_var_lmm))%*%fixed_k1)
+      matrix(c(rep(1,nrow(data[data$id==x,])),unlist(data[data$id==x,fu_time_fixed_variable]),unlist(data[data$id==x,baseline_var_lmm])), ncol=length_lmm_fixed_var+length(baseline_var_lmm))%*%fixed_k1)
   }
   cl <- makeCluster(no_cores)
   registerDoSNOW(cl)
   quadratic <-  foreach(i=seq(nrow(sample[[1]])),.combine="c")%dopar%{
     each_J_full_alpha <- unlist(sapply(dat_base$id, function(x)
-      matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_random_variable]),ncol=length_lmm_random_var)%*%sample[[which(unique(data$id)==x)]][i,]))
+      matrix(c(rep(1,nrow(data[data$id==x,])),unlist(data[data$id==x,fu_time_random_variable])),ncol=length_lmm_random_var)%*%sample[[which(unique(data$id)==x)]][i,]))
     b_star_invQ_b_star <- data[,fu_measure]-each_J_full_alpha-unlist(D_H_full_fixed)
     t(b_star_invQ_b_star)%*%b_star_invQ_b_star
   }
@@ -351,11 +351,11 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
     # at risk
     exp_betaZ <- lapply(unique(t),function(x)
       exp(data[data[,event_time]>=x,beta_variable]%*%matrix(beta[seq(beta_variable)],nrow=length(beta_variable)))*data[data[,event_time]>=x,"mu_exp_re"])
-    gammaX <- lapply(unique(t),function(x) data[data[,event_time]>=x,X_var]%*%gamma)
+    gammaX <- lapply(unique(t),function(x) data[data[,event_time]>=x,X_var]%*%t(gamma))
     base_F_i <- lapply(unique(t), function(x) data[data[,event_time]>=x,"base_cdf"])
 
     # at risk and fail in the future
-    gammaX_failure <- lapply(unique(t),function(x) data[data[,event_time]>=x & data[,event_status]==1,X_var]%*%gamma)
+    gammaX_failure <- lapply(unique(t),function(x) data[data[,event_time]>=x & data[,event_status]==1,X_var]%*%t(gamma))
     base_F_i_failure <- lapply(unique(t), function(x) data[data[,event_time]>=x & data[,event_status]==1,"base_cdf"])
 
     # number of tied events
@@ -468,16 +468,16 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   # estimate sd of error term
   if(is.null(baseline_var_lmm)){
     D_H_full_fixed <- sapply(dat_base$id,function(x)
-      matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_fixed_variable]),ncol=length_lmm_fixed_var)%*%fixed_k2)
+      matrix(c(rep(1,nrow(data[data$id==x,])),unlist(data[data$id==x,fu_time_fixed_variable])),ncol=length_lmm_fixed_var)%*%fixed_k2)
   }else{
     D_H_full_fixed <- sapply(dat_base$id,function(x)
-      matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_fixed_variable],data[data$id==x,baseline_var_lmm]),ncol=length_lmm_fixed_var+length(baseline_var_lmm))%*%fixed_k2)
+      matrix(c(rep(1,nrow(data[data$id==x,])),unlist(data[data$id==x,fu_time_fixed_variable]),unlist(data[data$id==x,baseline_var_lmm])),ncol=length_lmm_fixed_var+length(baseline_var_lmm))%*%fixed_k2)
   }
   cl <- makeCluster(no_cores)
   registerDoSNOW(cl)
   quadratic <-  foreach(i=seq(nrow(sample[[1]])),.combine="c")%dopar%{
     each_D_full_alpha <- unlist(sapply(dat_base$id, function(x)
-      matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_random_variable]),ncol=length_lmm_random_var)%*%sample[[which(unique(data$id)==x)]][i,]))
+      matrix(c(rep(1,nrow(data[data$id==x,])),unlist(data[data$id==x,fu_time_random_variable])),ncol=length_lmm_random_var)%*%sample[[which(unique(data$id)==x)]][i,]))
     b_star_invQ_b_star <- data[,fu_measure]-each_D_full_alpha-unlist(D_H_full_fixed)
     t(b_star_invQ_b_star)%*%b_star_invQ_b_star
   }
@@ -590,16 +590,16 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
     # estimate sd of error term
     if(is.null(baseline_var_lmm)){
       D_H_full_fixed <- sapply(dat_base$id,function(x)
-        matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_fixed_variable]),ncol=length_lmm_fixed_var)%*%fixed_k2)
+        matrix(c(rep(1,nrow(data[data$id==x,])),unlist(data[data$id==x,fu_time_fixed_variable])),ncol=length_lmm_fixed_var)%*%fixed_k2)
     }else{
       D_H_full_fixed <- sapply(dat_base$id,function(x)
-        matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_fixed_variable],data[data$id==x,baseline_var_lmm]),ncol=length_lmm_fixed_var+length(baseline_var_lmm))%*%fixed_k2)
+        matrix(c(rep(1,nrow(data[data$id==x,])),unlist(data[data$id==x,fu_time_fixed_variable]),unlist(data[data$id==x,baseline_var_lmm])),ncol=length_lmm_fixed_var+length(baseline_var_lmm))%*%fixed_k2)
     }
     cl <- makeCluster(no_cores)
     registerDoSNOW(cl)
     quadratic <-  foreach(i=seq(nrow(sample[[1]])),.combine="c")%dopar%{
       each_D_full_alpha <- unlist(sapply(dat_base$id, function(x)
-        matrix(c(rep(1,nrow(data[data$id==x,])),data[data$id==x,fu_time_random_variable]),ncol=length_lmm_random_var)%*%sample[[which(unique(data$id)==x)]][i,]))
+        matrix(c(rep(1,nrow(data[data$id==x,])),unlist(data[data$id==x,fu_time_random_variable])),ncol=length_lmm_random_var)%*%sample[[which(unique(data$id)==x)]][i,]))
       b_star_invQ_b_star <- data[,fu_measure]-each_D_full_alpha-unlist(D_H_full_fixed)
       t(b_star_invQ_b_star)%*%b_star_invQ_b_star
     }
