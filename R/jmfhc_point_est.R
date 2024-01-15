@@ -98,7 +98,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
 
   #### Step 1: initial values ####
   # regression parameters in the longitudinal submodel
-  lmem <- as.formula(paste(fu_measure,"~",fu_time_fixed_variable,"+",baseline_var_lmm,"+(",fu_time_random_variable,"|id)"))
+  lmem <- as.formula(paste(fu_measure,"~",paste(fu_time_fixed_variable,collapse = "+"),"+",paste(baseline_var_lmm,collapse = "+"),"+(",paste(fu_time_random_variable,collapse = "+"),"|id)"))
   lmem <- lmer(lmem,REML = TRUE,data=data)
   ss <- summary(lmem)
   prior_Sigma <- ss$varcor$id[seq(length_lmm_random_var),seq(length_lmm_random_var)]
@@ -109,13 +109,23 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   data <- merge(data,dat_base[,c(random_effects,"id")],by="id")
 
   # regression parameters in the cure submodel
-  dat_base <- as.matrix(dat_base[order(as.matrix(dat_base[,event_time])),])
-  t <- dat_base[dat_base[,event_status]==1,event_time]
+  dat_base <- as.matrix(dat_base[order(dat_base[,event_time]),])
+  t <-dat_base[dat_base[,event_status]==1,event_time]
+  t_matrix <-dat_base[dat_base[,event_status]==1,]
+  colnames(t_matrix)[colnames(t_matrix)==event_time] <- "time"
   formula.exp <- paste0("Surv(",event_time,",",event_status,")~", paste(Z_var, collapse=" + "))
   dat_base <- as.data.frame(dat_base)
   initial <- coxph(as.formula(formula.exp), data = dat_base)
   H0 <- basehaz(initial, centered=FALSE) # considered ties using breslow estimator
-  H0 <- H0[H0[, 2] %in% unique(t), ]
+  H0 <- as.matrix(H0[H0[, 2] %in% t, ])
+  colnames(H0) <- c("hazard","time")
+
+  check <- merge(t_matrix,H0,by="time",all.x=T)
+  H0 <- check[,c("hazard","time")]
+  if (sum(is.na(H0$hazard))>0){
+    H0$hazard <- na.locf(H0$hazard)
+  }
+
   #initial values of beta
   beta <- initial$coefficients
   #initial value of beta_0
@@ -125,6 +135,10 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   #initial values of f0(t)
   base_f <- c(base_cdf[1],sapply(2:length(base_cdf), function(x) base_cdf[x]-base_cdf[x-1]))
   base <- data.frame(H0$time,base_cdf,base_f)
+  if (sum(base$base_f==0)>0){
+    base$base_f[base$base_f==0] <- NA
+    base$base_f <- na.locf(base$base_f)
+  }
   names(base)[1] <- event_time
   dat_base[dat_base[,event_status]==1,c("base_cdf","base_f")] <- merge(dat_base[dat_base[,event_status]==1,],base,by=event_time)[,c("base_cdf","base_f")]
   dat_base$base_f[dat_base$event==0] <- 0
