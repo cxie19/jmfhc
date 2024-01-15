@@ -109,7 +109,7 @@ jmfhc_point_est <- function(data, event_time, event_status, id,
   data <- merge(data,dat_base[,c(random_effects,"id")],by="id")
 
   # regression parameters in the cure submodel
-  dat_base <- as.matrix(dat_base[order(dat_base[,event_time]),])
+  dat_base <- as.matrix(dat_base[order(as.matrix(dat_base[,event_time])),])
   t <-dat_base[dat_base[,event_status]==1,event_time]
   t_matrix <-dat_base[dat_base[,event_status]==1,]
   colnames(t_matrix)[colnames(t_matrix)==event_time] <- "time"
